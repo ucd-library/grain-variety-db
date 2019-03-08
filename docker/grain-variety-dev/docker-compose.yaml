@@ -1,0 +1,15 @@
+version: '3'
+
+services:
+  pg:
+    build: ./
+    volumes:
+      - ../../schema:/sql
+      - ../io:/io
+      - pg-data:/var/lib/postgresql/data
+    ports:
+      - 5433:5432
+
+volumes:
+  pg-data:
+    driver: local
