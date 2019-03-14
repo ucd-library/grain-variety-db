@@ -2,7 +2,7 @@
 DROP TABLE IF EXISTS variety_name CASCADE;
 CREATE TABLE variety_name (
   variety_name_id SERIAL PRIMARY KEY,
-  varity_id INTEGER REFERENCES variety NOT NULL,
+  variety_id INTEGER REFERENCES variety NOT NULL,
   name TEXT NOT NULL UNIQUE
 );
 CREATE INDEX variety_name_name_idx ON variety_name(name);
@@ -10,13 +10,13 @@ CREATE INDEX variety_name_name_idx ON variety_name(name);
 -- VIEW
 CREATE OR REPLACE VIEW variety_name_view AS 
 SELECT 
-  v.uc_entry_number as uc_entry_number,
-  nv.name as name
+  v.name as variety_name,
+  vn.name as name
 FROM
   variety v,
   variety_name vn
 WHERE
-  v.variety_id = nv.variety_id;
+  v.variety_id = vn.variety_id;
 
 
 -- FUNCTION GETTER
