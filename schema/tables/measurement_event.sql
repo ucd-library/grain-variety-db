@@ -1,8 +1,7 @@
 -- TABLE
-DROP TABLE IF EXISTS measurement_event CASCADE;
-CREATE TABLE measurement_event (
-  measurement_event_id SERIAL PRIMARY KEY,
-  field_id INTEGER REFERENCES field NOT NULL,
+DROP TABLE IF EXISTS variety_sampling_event CASCADE;
+CREATE TABLE variety_sampling_event (
+  variety_sampling_event_id SERIAL PRIMARY KEY,
   year INTEGER NOT NULL,
   date DATE,
   season season NOT NULL,
@@ -11,21 +10,20 @@ CREATE TABLE measurement_event (
 );
 
 -- VIEW
-CREATE OR REPLACE VIEW measurement_event_view AS 
-SELECT 
-  f.name as field_name,
-  me.year as year,
-  me.date as date,
-  me.season as season,
-  me.growth_state as growth_stage
-FROM
-  measurement_event me,
-  field f
-WHERE
-  me.field_id = f.field_id;
+-- CREATE OR REPLACE VIEW variety_sampling_event_view AS 
+-- SELECT 
+--   me.year as year,
+--   me.date as date,
+--   me.season as season,
+--   me.growth_state as growth_stage
+-- FROM
+--   variety_sampling_event me,
+--   field f
+-- WHERE
+--   me.field_id = f.field_id;
 
 -- INSERT
-CREATE OR REPLACE FUNCTION insert_measurement_event (
+CREATE OR REPLACE FUNCTION insert_variety_sampling_event (
   field_name text,
   year integer,
   date date,
@@ -41,7 +39,7 @@ BEGIN
     select extract(YEAR FROM date) into year;
   END IF;
 
-  INSERT INTO measurement_event (
+  INSERT INTO variety_sampling_event (
     field_id, year, date, season, growth_stage
   ) VALUES (
     fid, year, date, season, growth_stage
@@ -53,7 +51,7 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- FUNCTION GETTER
-CREATE OR REPLACE FUNCTION get_measurement_event_id(field_name_in text, year_in integer, season_in season, growth_stage_in growth_state) RETURNS INTEGER AS $$   
+CREATE OR REPLACE FUNCTION get_variety_sampling_event_id(field_name_in text, year_in integer, season_in season, growth_stage_in growth_state) RETURNS INTEGER AS $$   
 DECLARE
   meid integer;
   fid integer;
@@ -62,9 +60,9 @@ BEGIN
   select get_field_id(field_name_in) into fid; 
 
   select 
-    measurement_event_id into meid 
+    variety_sampling_event_id into meid 
   from  
-    measurement_event
+    variety_sampling_event
   where 
     field_id = fid AND
     year = year_in AND

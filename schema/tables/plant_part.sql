@@ -1,0 +1,6 @@
+-- TABLE
+DROP TABLE IF EXISTS plant_part CASCADE;
+CREATE TABLE plant_part (
+  plant_part_id SERIAL PRIMARY KEY,
+  name TEXT UNIQUE NOT NULL
+);
