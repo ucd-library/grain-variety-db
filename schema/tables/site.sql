@@ -9,17 +9,19 @@ CREATE TABLE site (
 );
 
 -- FUNCTION GETTER
-CREATE OR REPLACE FUNCTION get_site_id(name_in text) RETURNS INTEGER AS $$   
+CREATE OR REPLACE FUNCTION get_site_id(trail_name TEXT, site_name TEXT) RETURNS INTEGER AS $$   
 DECLARE
-  sid integer;
+  sid INTEGER;
+  tid INTEGER;
 BEGIN
 
-  select site_id into sid from site where name = name_in;
+  select trail_id into tid from trail where name = trail_name;
+  select site_id into sid from site where name = site_name and trail_id = tid;
 
   IF (sid is NULL) then
-    RAISE EXCEPTION 'Unknown site: %', name_in;
+    RAISE EXCEPTION 'Unknown trail site: % %', trail_name, site_name;
   END IF;
 
-  RETURN side;
+  RETURN sid;
 END; 
 $$ LANGUAGE plpgsql;
