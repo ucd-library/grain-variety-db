@@ -11,7 +11,7 @@ CREATE TABLE associated_tables (
   associated_tables_id SERIAL PRIMARY KEY,
   table_view text REFERENCES tables,
   name TEXT NOT NULL
-)
+);
 
 DROP TABLE IF EXISTS source CASCADE;
 CREATE TABLE source (

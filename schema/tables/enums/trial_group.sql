@@ -1,0 +1,2 @@
+DROP TYPE if EXISTS trial_group CASCADE;
+CREATE TYPE trial_group AS ENUM ('BARLEY', 'WHEAT', 'DURUM', 'COMMON');

@@ -1,0 +1,2 @@
+DROP TYPE if EXISTS region CASCADE;
+CREATE TYPE region AS ENUM ('IR', 'NonIR');
