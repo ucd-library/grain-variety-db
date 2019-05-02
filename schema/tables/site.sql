@@ -34,21 +34,21 @@ JOIN ca_counties cac ON ST_Intersects(cac.geom, s.boundary)
 LEFT JOIN source sc ON s.source_id = sc.source_id;
 
 
-CREATE OR REPLACE VIEW site_view AS
-  SELECT
-    s.site_id as site_id,
-    s.name as name,
-    s.common_name as common_name,
-    s.region as region,
-    s.description as description,
-    s.cooperator as cooperator,
-    s.season as season,
-    s.season_start_year as season_start_year,
-    s.season_end_year as season_end_year,
-    sc.name as source_name
-  FROM
-    site s
-LEFT JOIN source sc ON s.source_id = sc.source_id;
+-- CREATE OR REPLACE VIEW site_view AS
+--   SELECT
+--     s.site_id as site_id,
+--     s.name as name,
+--     s.common_name as common_name,
+--     s.region as region,
+--     s.description as description,
+--     s.cooperator as cooperator,
+--     s.season as season,
+--     s.season_start_year as season_start_year,
+--     s.season_end_year as season_end_year,
+--     sc.name as source_name
+--   FROM
+--     site s
+-- LEFT JOIN source sc ON s.source_id = sc.source_id;
 
 CREATE OR REPLACE VIEW site_view_ll as
   SELECT

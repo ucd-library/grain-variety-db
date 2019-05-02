@@ -101,12 +101,12 @@ BEGIN
 
   select trial_id into tid from trial where name = name_in;
 
-  select 
-    trial_id into tid 
-  from 
-    trial t 
-  where  
-    name = name_in;
+  -- select 
+  --   trial_id into tid 
+  -- from 
+  --   trial t 
+  -- where  
+  --   name = name_in;
 
   if (tid is NULL) then
     RAISE EXCEPTION 'Unknown trial: %', name_in;
