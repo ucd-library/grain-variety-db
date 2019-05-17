@@ -1,2 +1,2 @@
 # grain-variety-db
-Grain Variety Trail Database Schema
+Grain Variety Trial Database Schema

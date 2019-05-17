@@ -101,10 +101,10 @@ BEGIN
     name = name_in;
 
   if (cid is NULL) then
-    RAISE EXCEPTION 'Unknown crop: %', name;
+    RAISE EXCEPTION 'Unknown crop: %', name_in;
   END IF;
   
-  RETURN hid;
+  RETURN cid;
 END ; 
 $$ LANGUAGE plpgsql;
 

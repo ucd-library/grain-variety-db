@@ -7,8 +7,7 @@ CREATE TABLE variety (
   name TEXT UNIQUE NOT NULL,
   crop_classification crop_classification,
   source text,
-  release_status release_status,
-  current_name boolean
+  release_status release_status
 );
 
 -- VIEW
@@ -20,7 +19,6 @@ CREATE OR REPLACE VIEW variety_view AS
     v.crop_classification as crop_classification,
     v.source as source,
     v.release_status as release_status,
-    v.current_name as current_name,
     sc.name as source_name
   FROM
     variety v
@@ -34,7 +32,6 @@ CREATE OR REPLACE FUNCTION insert_variety (
   crop_classification crop_classification,
   source text,
   release_status release_status,
-  current_name text,
   source_name text) RETURNS void AS $$   
 DECLARE
   source_id INTEGER;
@@ -45,9 +42,9 @@ BEGIN
   select get_crop_id(crop) into crop_id;
 
   INSERT INTO variety (
-    source_id, crop_id, name, crop_classification, source, release_status, current_name
+    source_id, crop_id, name, crop_classification, source, release_status
   ) VALUES (
-    source_id, crop_id, name, crop_classification, source, release_status, current_name
+    source_id, crop_id, name, crop_classification, source, release_status
   );
 
 EXCEPTION WHEN raise_exception THEN
@@ -61,8 +58,7 @@ CREATE OR REPLACE FUNCTION update_variety (
   name_in text,
   crop_classification_in crop_classification,
   source_in text,
-  release_status_in release_status,
-  current_name_in text) RETURNS void AS $$   
+  release_status_in release_status) RETURNS void AS $$   
 DECLARE
   cid INTEGER;
 BEGIN
@@ -70,9 +66,9 @@ BEGIN
   select get_crop_id(crop_in) into cid;
 
   UPDATE variety SET (
-    crop_id, name, crop_classification, source, release_status, current_name
+    crop_id, name, crop_classification, source, release_status
   ) = (
-    cid, name_in, crop_classification_in, source_in, release_status_in, current_name_in
+    cid, name_in, crop_classification_in, source_in, release_status_in
   ) WHERE
     variety_id = variety_id_in;
 
@@ -91,7 +87,6 @@ BEGIN
     crop_classification := NEW.crop_classification,
     source := NEW.source,
     release_status := NEW.release_status,
-    current_name := NEW.current_name,
     source_name := NEW.source_name
   );
   RETURN NEW;
@@ -110,8 +105,7 @@ BEGIN
     name_in := NEW.name,
     crop_classification_in := NEW.crop_classification,
     source_in := NEW.source,
-    release_status_in := NEW.release_status,
-    current_name_in := NEW.current_name,
+    release_status_in := NEW.release_status
   );
   RETURN NEW;
 

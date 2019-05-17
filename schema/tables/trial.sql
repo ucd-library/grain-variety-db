@@ -112,7 +112,7 @@ BEGIN
     RAISE EXCEPTION 'Unknown trial: %', name_in;
   END IF;
   
-  RETURN hid;
+  RETURN tid;
 END ; 
 $$ LANGUAGE plpgsql;
 

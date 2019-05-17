@@ -197,7 +197,7 @@ BEGIN
     RAISE EXCEPTION 'Unknown site: %', name_in;
   END IF;
   
-  RETURN hid;
+  RETURN sid;
 END ; 
 $$ LANGUAGE plpgsql;
 

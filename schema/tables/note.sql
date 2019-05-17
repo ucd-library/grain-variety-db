@@ -26,12 +26,12 @@ LEFT JOIN field_location fl ON fl.field_location_id = fn.field_location_id
 LEFT JOIN plot p ON p.plot_id = fl.plot_id
 LEFT JOIN field f ON f.field_id = fl.field_id
 LEFT JOIN site s ON s.site_id = f.site_id
-LEFT JOIN trail t ON t.trail_id = s.site_id
+LEFT JOIN trial t ON t.trial_id = s.site_id
 LEFT JOIN source sc ON fn.source_id = sc.source_id;
 
 -- FUNCTION INSERT
 CREATE OR REPLACE FUNCTION insert_note (
-  trail_name text,
+  trial_name text,
   site_name text,
   field_name text,
   plot_name integer,
