@@ -22,7 +22,7 @@ CREATE OR REPLACE VIEW variety_view AS
     sc.name as source_name
   FROM
     variety v
-LEFT JOIN crop c ON c.crop_id = c.crop_id
+LEFT JOIN crop c ON v.crop_id = c.crop_id
 LEFT JOIN source sc ON v.source_id = sc.source_id;
 
 -- FUNCTIONS

@@ -3,7 +3,8 @@ DROP TABLE IF EXISTS location CASCADE;
 CREATE TABLE location (
   location_id SERIAL PRIMARY KEY,
   field_id INTEGER REFERENCES field NOT NULL,
-  plot_id INTEGER REFERENCES plot
+  plot_id INTEGER REFERENCES plot,
+  source_id INTEGER REFERENCES source
 );
 
 -- FUNCTION INSERT

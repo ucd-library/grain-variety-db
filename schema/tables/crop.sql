@@ -46,11 +46,9 @@ DECLARE
 
 BEGIN
 
-  UPDATE crop SET (
-    name
-  ) = (
-    name_in
-  ) WHERE
+  UPDATE crop SET 
+    name = name_in
+  WHERE
     crop_id = crop_id_in;
 
 EXCEPTION WHEN raise_exception THEN
@@ -78,7 +76,7 @@ RETURNS TRIGGER AS $$
 BEGIN
   PERFORM update_crop(
     name_in := NEW.name,
-    crop_id := NEW.crop_id
+    crop_id_in := NEW.crop_id
   );
   RETURN NEW;
 

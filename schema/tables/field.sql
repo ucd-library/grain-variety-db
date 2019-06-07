@@ -84,9 +84,9 @@ BEGIN
   ) RETURNING field_id into fid;
 
   INSERT INTO location (
-    field_id, plot_id 
+    field_id, plot_id, source_id
   ) VALUES (
-    fid, NULL
+    fid, NULL, scid
   );
 
 EXCEPTION WHEN raise_exception THEN
@@ -123,7 +123,7 @@ BEGIN
     select get_crop_id(previous_crop_in) into pcid;
   END IF;
 
-  UPDATE crop SET (
+  UPDATE field SET (
     trial_id, site_id, name, water_stress, nitrogen_stress, bedded,
     trial_group, crop_id, crop_description, previous_crop_id, previous_crop_description
   ) = (
@@ -131,6 +131,29 @@ BEGIN
     trial_group_in, cid, crop_description_in, pcid, previous_crop_description_in
   ) WHERE
     field_id = field_id_in;
+
+EXCEPTION WHEN raise_exception THEN
+  RAISE;
+END; 
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION delete_fields (
+  field_id_in integer,
+  source_name_in text) RETURNS void AS $$   
+DECLARE
+  scid INTEGER;
+BEGIN
+
+  if( source_name_in IS NOT NULL ) THEN
+    SELECT get_source_id(source_name_in) into scid;
+
+    DELETE FROM location WHERE source_id = scid;
+    DELETE FROM location WHERE source_id = scid;
+  END IF;
+
+  IF( field_id_in IS NOT NULL ) THEN
+    DELETE FROM field where field_id = field_id_in;
+  END IF;
 
 EXCEPTION WHEN raise_exception THEN
   RAISE;
@@ -186,6 +209,20 @@ EXCEPTION WHEN raise_exception THEN
 END; 
 $$ LANGUAGE plpgsql;
 
+CREATE OR REPLACE FUNCTION delete_fields_from_trig() 
+RETURNS TRIGGER AS $$   
+BEGIN
+  PERFORM delete_fields (
+    field_id_in := OLD.field_id,
+    source_name_in := OLD.source_name
+  );
+  RETURN OLD;
+
+EXCEPTION WHEN raise_exception THEN
+  RAISE;
+END; 
+$$ LANGUAGE plpgsql;
+
 
 -- FUNCTION GETTER
 CREATE OR REPLACE FUNCTION get_field_id(trial_name_in text, field_name_in text) RETURNS INTEGER AS $$   
@@ -222,3 +259,8 @@ CREATE TRIGGER field_update_trig
   INSTEAD OF UPDATE ON
   field_view FOR EACH ROW 
   EXECUTE PROCEDURE update_field_from_trig();
+
+CREATE TRIGGER field_delete_trig
+  INSTEAD OF DELETE ON
+  field_view FOR EACH ROW 
+  EXECUTE PROCEDURE delete_fields_from_trig();

@@ -1,18 +1,4 @@
--- TABLES
-DROP TABLE IF EXISTS tables CASCADE;
-CREATE TABLE tables (
-  table_view TEXT PRIMARY KEY,
-  uid TEXT NOT NULL,
-  name TEXT NOT NULL
-);
-
-DROP TABLE IF EXISTS associated_tables CASCADE;
-CREATE TABLE associated_tables (
-  associated_tables_id SERIAL PRIMARY KEY,
-  table_view text REFERENCES tables,
-  name TEXT NOT NULL
-);
-
+-- TABLE
 DROP TABLE IF EXISTS source CASCADE;
 CREATE TABLE source (
   source_id SERIAL PRIMARY KEY,
