@@ -4,7 +4,7 @@ CREATE TABLE plot (
   plot_id SERIAL PRIMARY KEY,
   source_id INTEGER REFERENCES source NOT NULL,
   field_id INTEGER REFERENCES field NOT NULL,
-  block INTEGER NOT NULL,
+  block INTEGER,
   range INTEGER,
   row INTEGER,
   plot_number INTEGER NOT NULL,
