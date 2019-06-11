@@ -1,9 +1,9 @@
 -- TABLE
 DROP TABLE IF EXISTS variety CASCADE;
 CREATE TABLE variety (
-  variety_id SERIAL PRIMARY KEY,
-  source_id INTEGER REFERENCES source NOT NULL,
-  crop_id INTEGER REFERENCES crop NOT NULL,
+  variety_id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  source_id UUID REFERENCES source NOT NULL,
+  crop_id UUID REFERENCES crop NOT NULL,
   name TEXT UNIQUE NOT NULL,
   crop_classification crop_classification,
   source text,
@@ -27,6 +27,7 @@ LEFT JOIN source sc ON v.source_id = sc.source_id;
 
 -- FUNCTIONS
 CREATE OR REPLACE FUNCTION insert_variety (
+  variety_id UUID,
   crop text,
   name text,
   crop_classification crop_classification,
@@ -34,17 +35,20 @@ CREATE OR REPLACE FUNCTION insert_variety (
   release_status release_status,
   source_name text) RETURNS void AS $$   
 DECLARE
-  source_id INTEGER;
-  crop_id INTEGER;
+  source_id UUID;
+  crop_id UUID;
 BEGIN
 
+  if( variety_id IS NULL ) Then
+    select uuid_generate_v4() into variety_id;
+  END IF;
   select get_source_id(source_name) into source_id;
   select get_crop_id(crop) into crop_id;
 
   INSERT INTO variety (
-    source_id, crop_id, name, crop_classification, source, release_status
+    variety_id, source_id, crop_id, name, crop_classification, source, release_status
   ) VALUES (
-    source_id, crop_id, name, crop_classification, source, release_status
+    variety_id, source_id, crop_id, name, crop_classification, source, release_status
   );
 
 EXCEPTION WHEN raise_exception THEN
@@ -53,14 +57,14 @@ END;
 $$ LANGUAGE plpgsql;
 
 CREATE OR REPLACE FUNCTION update_variety (
-  variety_id_in INTEGER,
+  variety_id_in UUID,
   crop_in text,
   name_in text,
   crop_classification_in crop_classification,
   source_in text,
   release_status_in release_status) RETURNS void AS $$   
 DECLARE
-  cid INTEGER;
+  cid UUID;
 BEGIN
 
   select get_crop_id(crop_in) into cid;
@@ -82,6 +86,7 @@ CREATE OR REPLACE FUNCTION insert_variety_from_trig()
 RETURNS TRIGGER AS $$   
 BEGIN
   PERFORM insert_variety(
+    variety_id := NEW.variety_id,
     crop := NEW.crop,
     name := NEW.name,
     crop_classification := NEW.crop_classification,
@@ -115,9 +120,9 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- FUNCTION GETTER
-CREATE OR REPLACE FUNCTION get_variety_id(name_in text) RETURNS INTEGER AS $$   
+CREATE OR REPLACE FUNCTION get_variety_id(name_in text) RETURNS UUID AS $$   
 DECLARE
-  vid integer;
+  vid UUID;
 BEGIN
 
   select 

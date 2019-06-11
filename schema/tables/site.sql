@@ -1,8 +1,8 @@
 -- TABLE
 DROP TABLE IF EXISTS site CASCADE;
 CREATE TABLE site (
-  site_id SERIAL PRIMARY KEY,
-  source_id INTEGER REFERENCES source NOT NULL,
+  site_id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  source_id UUID REFERENCES source NOT NULL,
   name TEXT NOT NULL UNIQUE,
   common_name TEXT,
   region REGION,
@@ -73,6 +73,7 @@ CREATE OR REPLACE VIEW site_view_kml as
 
 -- FUNCTIONS
 CREATE OR REPLACE FUNCTION insert_site_kml (
+  site_id UUID,
   name text,
   common_name text,
   region region,
@@ -84,9 +85,12 @@ CREATE OR REPLACE FUNCTION insert_site_kml (
   boundary text,
   source_name text) RETURNS void AS $$   
 DECLARE
-  source_id INTEGER;
+  source_id UUID;
 BEGIN
 
+  if( site_id IS NULL ) Then
+    select uuid_generate_v4() into site_id;
+  END IF;
   select get_source_id(source_name) into source_id;
 
   if( boundary is not NULL ) then
@@ -94,10 +98,10 @@ BEGIN
   END IF;
 
   INSERT INTO site (
-    source_id, name, common_name, region, description, cooperator, season, season_start_year,
+    site_id, source_id, name, common_name, region, description, cooperator, season, season_start_year,
     season_end_year, boundary
   ) VALUES (
-    source_id, name, common_name, region, description, cooperator, season, season_start_year,
+    site_id, source_id, name, common_name, region, description, cooperator, season, season_start_year,
     season_end_year, boundary
   );
 
@@ -116,7 +120,7 @@ CREATE OR REPLACE FUNCTION update_site_kml (
   season_start_year_in integer,
   season_end_year_in integer,
   boundary_in text,
-  site_id_in INTEGER) RETURNS void AS $$   
+  site_id_in UUID) RETURNS void AS $$   
 DECLARE
 
 BEGIN
@@ -140,6 +144,7 @@ CREATE OR REPLACE FUNCTION insert_site_kml_from_trig()
 RETURNS TRIGGER AS $$   
 BEGIN
   PERFORM insert_site_kml(
+    site_id := NEW.site_id,
     source_name := NEW.source_name,
     name := NEW.name,
     common_name := NEW.common_name,
@@ -181,9 +186,9 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- FUNCTION GETTER
-CREATE OR REPLACE FUNCTION get_site_id(name_in text) RETURNS INTEGER AS $$   
+CREATE OR REPLACE FUNCTION get_site_id(name_in text) RETURNS UUID AS $$   
 DECLARE
-  sid integer;
+  sid UUID;
 BEGIN
 
   select 

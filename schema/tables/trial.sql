@@ -1,8 +1,8 @@
 -- TABLE
 DROP TABLE IF EXISTS trial CASCADE;
 CREATE TABLE trial (
-  trial_id SERIAL PRIMARY KEY,
-  source_id INTEGER REFERENCES source NOT NULL,
+  trial_id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  source_id UUID REFERENCES source NOT NULL,
   name text NOT NULL,
   description text
 );
@@ -22,13 +22,17 @@ CREATE OR REPLACE VIEW trial_view AS
 
 -- FUNCTIONS
 CREATE OR REPLACE FUNCTION insert_trial (
+  trail_id UUID,
   name text,
   description text,
   source_name text) RETURNS void AS $$   
 DECLARE
-  source_id INTEGER;
+  source_id UUID;
 BEGIN
 
+  if( trail_id IS NULL ) Then
+    select uuid_generate_v4() into trail_id;
+  END IF;
   select get_source_id(source_name) into source_id;
 
   INSERT INTO trial (
@@ -45,7 +49,7 @@ $$ LANGUAGE plpgsql;
 CREATE OR REPLACE FUNCTION update_trial (
   name_in text,
   description_in text,
-  trial_id_in INTEGER) RETURNS void AS $$   
+  trial_id_in UUID) RETURNS void AS $$   
 DECLARE
 
 BEGIN
@@ -67,6 +71,7 @@ CREATE OR REPLACE FUNCTION insert_trial_from_trig()
 RETURNS TRIGGER AS $$   
 BEGIN
   PERFORM insert_trial(
+    trail_id := NEW.trail_id,
     name := NEW.name,
     description := NEW.description,
     source_name := NEW.source_name
@@ -94,9 +99,9 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- FUNCTION GETTER
-CREATE OR REPLACE FUNCTION get_trial_id(name_in text) RETURNS INTEGER AS $$   
+CREATE OR REPLACE FUNCTION get_trial_id(name_in text) RETURNS UUID AS $$   
 DECLARE
-  tid integer;
+  tid UUID;
 BEGIN
 
   select trial_id into tid from trial where name = name_in;

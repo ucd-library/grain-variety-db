@@ -1,16 +1,16 @@
 -- TABLE
 DROP TABLE IF EXISTS plot CASCADE;
 CREATE TABLE plot (
-  plot_id SERIAL PRIMARY KEY,
-  source_id INTEGER REFERENCES source NOT NULL,
-  field_id INTEGER REFERENCES field NOT NULL,
+  plot_id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  source_id UUID REFERENCES source NOT NULL,
+  field_id UUID REFERENCES field NOT NULL,
   block INTEGER,
   range INTEGER,
   row INTEGER,
   plot_number INTEGER NOT NULL,
   boundary GEOMETRY(POLYGON, 4326),
   description text,
-  variety_id INTEGER REFERENCES variety NOT NULL
+  variety_id UUID REFERENCES variety NOT NULL
 );
 
 -- VIEW
@@ -35,6 +35,7 @@ LEFT JOIN variety v on p.variety_id = v.variety_id;
 
 -- FUNCTIONS
 CREATE OR REPLACE FUNCTION insert_plot (
+  plot_id UUID,
   trial_name TEXT,
   field_name TEXT,
   block INTEGER,
@@ -45,19 +46,22 @@ CREATE OR REPLACE FUNCTION insert_plot (
   variety_name TEXT,
   source_name TEXT) RETURNS void AS $$   
 DECLARE
-  source_id INTEGER;
-  field_id INTEGER;
-  variety_id INTEGER;
+  source_id UUID;
+  field_id UUID;
+  variety_id UUID;
 BEGIN
 
+  if( plot_id IS NULL ) Then
+    select uuid_generate_v4() into plot_id;
+  END IF;
   select get_source_id(source_name) into source_id;
   select get_field_id(trial_name, field_name) into field_id;
   select get_variety_id(variety_name) into variety_id;
 
   INSERT INTO plot (
-    field_id, block, range, row, plot_number, description, variety_id, source_id
+    plot_id, field_id, block, range, row, plot_number, description, variety_id, source_id
   ) VALUES (
-    field_id, block, range, row, plot_number, description, variety_id, source_id
+    plot_id, field_id, block, range, row, plot_number, description, variety_id, source_id
   );
 
 EXCEPTION WHEN raise_exception THEN
@@ -66,7 +70,7 @@ END;
 $$ LANGUAGE plpgsql;
 
 CREATE OR REPLACE FUNCTION update_plot (
-  plot_id_in INTEGER,
+  plot_id_in UUID,
   trial_name_in TEXT,
   field_name_in TEXT,
   block_in INTEGER,
@@ -76,8 +80,8 @@ CREATE OR REPLACE FUNCTION update_plot (
   description_in TEXT,
   variety_name_in TEXT) RETURNS void AS $$   
 DECLARE
-  fid INTEGER;
-  vid INTEGER;
+  fid UUID;
+  vid UUID;
 BEGIN
 
   select get_variety_id(variety_name_in) into vid;
@@ -100,6 +104,7 @@ CREATE OR REPLACE FUNCTION insert_plot_from_trig()
 RETURNS TRIGGER AS $$   
 BEGIN
   PERFORM insert_plot(
+    plot_id := NEW.plot_id,
     trial_name := NEW.trial_name,
     field_name := NEW.field_name,
     block := NEW.block,
@@ -138,10 +143,10 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- FUNCTION GETTER
-CREATE OR REPLACE FUNCTION get_plot_id(trial_name_in text, field_name text, plot_number text) RETURNS INTEGER AS $$   
+CREATE OR REPLACE FUNCTION get_plot_id(trial_name_in text, field_name text, plot_number text) RETURNS UUID AS $$   
 DECLARE
-  pid integer;
-  fid integer;
+  pid UUID;
+  fid UUID;
 BEGIN
 
   select get_field_id(trial_name_in, field_name_in) into fid;

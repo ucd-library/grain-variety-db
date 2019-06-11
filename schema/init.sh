@@ -19,8 +19,8 @@ shp2pgsql ../data/CA_Counties/CA_Counties_TIGER2016.shp ca_counties | psql
 psql -c 'UPDATE ca_counties set geom = ST_Transform(ST_SetSRID(geom, 3857),4326);';
 
 # tables
-psql -f ./tables/source.sql
 psql -f ./tables/tables.sql
+psql -f ./tables/source.sql
 psql -f ./tables/trial.sql
 psql -f ./tables/site.sql
 
@@ -51,9 +51,9 @@ insert_view () {
 }
 
 # PROJECT DATA
-insert_view ../data/trial_view
-insert_view ../data/site_view_kml
-insert_view ../data/crop_view
-insert_view ../data/variety_view
-insert_view ../data/field_view
-insert_view ../data/plot_view
+# insert_view ../data/trial_view
+# insert_view ../data/site_view_kml
+# insert_view ../data/crop_view
+# insert_view ../data/variety_view
+# insert_view ../data/field_view
+# insert_view ../data/plot_view

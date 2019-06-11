@@ -1,31 +1,35 @@
 -- TABLE
 DROP TABLE IF EXISTS location CASCADE;
 CREATE TABLE location (
-  location_id SERIAL PRIMARY KEY,
-  field_id INTEGER REFERENCES field NOT NULL,
-  plot_id INTEGER REFERENCES plot,
-  source_id INTEGER REFERENCES source
+  location_id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  field_id UUID REFERENCES field NOT NULL,
+  plot_id UUID REFERENCES plot,
+  source_id UUID REFERENCES source
 );
 
 -- FUNCTION INSERT
 CREATE OR REPLACE FUNCTION insert_location (
+  location_id UUID,
   site_name text,
   field_name text,
   plot_name text) RETURNS void AS $$   
 DECLARE
-  fid integer;
-  pid integer;
+  fid UUID;
+  pid UUID;
 BEGIN
 
+  if( location_id IS NULL ) Then
+    select uuid_generate_v4() into location_id;
+  END IF;
   SELECT get_field_id(site_name) INTO fid;
   IF (plot_name is not NULL) then
     SELECT get_plot_id(site_name, field_name, plot_name) INTO pid;
   END IF;
 
   INSERT INTO location (
-    field_id, plot_id 
+    location_id, field_id, plot_id 
   ) VALUES (
-    fid, pid
+    location_id, fid, pid
   );
 
 EXCEPTION WHEN raise_exception THEN
@@ -34,11 +38,11 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- FUNCTION GETTER
-CREATE OR REPLACE FUNCTION get_location_id(site_name text, field_name text, plot_name text) RETURNS INTEGER AS $$   
+CREATE OR REPLACE FUNCTION get_location_id(site_name text, field_name text, plot_name text) RETURNS UUID AS $$   
 DECLARE
-  fid integer;
-  pid integer;
-  lid integer;
+  fid UUID;
+  pid UUID;
+  lid UUID;
 BEGIN
 
   SELECT get_field_id(site_name) INTO fid;

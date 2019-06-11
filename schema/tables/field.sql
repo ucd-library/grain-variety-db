@@ -1,18 +1,18 @@
 -- TABLE
 DROP TABLE IF EXISTS field CASCADE;
 CREATE TABLE field (
-  field_id SERIAL PRIMARY KEY,
-  source_id INTEGER REFERENCES source NOT NULL,
-  site_id INTEGER REFERENCES site NOT NULL,
-  trial_id INTEGER REFERENCES trial NOT NULL,
+  field_id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  source_id UUID REFERENCES source NOT NULL,
+  site_id UUID REFERENCES site NOT NULL,
+  trial_id UUID REFERENCES trial NOT NULL,
   name text NOT NULL UNIQUE,
   water_stress BOOLEAN NOT NULL,
   nitrogen_stress BOOLEAN NOT NULL,
   bedded INTEGER,
   trial_group trial_group,
-  crop_id INTEGER REFERENCES CROP NOT NULL,
+  crop_id UUID REFERENCES CROP NOT NULL,
   crop_description TEXT,
-  previous_crop_id INTEGER REFERENCES CROP,
+  previous_crop_id UUID REFERENCES CROP,
   previous_crop_description TEXT
 );
 
@@ -43,6 +43,7 @@ LEFT JOIN source sc ON sc.source_id = f.source_id;
 
 -- FUNCTION INSERT
 CREATE OR REPLACE FUNCTION insert_field (
+  field_id UUID,
   trial_name text,
   site_name text,
   name text,
@@ -56,14 +57,17 @@ CREATE OR REPLACE FUNCTION insert_field (
   previous_crop_description text,
   source_name text) RETURNS void AS $$   
 DECLARE
-  sid INTEGER;
-  scid INTEGER;
-  fid INTEGER;
-  tid INTEGER;
-  cid INTEGER;
-  pcid INTEGER;
+  sid UUID;
+  scid UUID;
+  fid UUID;
+  tid UUID;
+  cid UUID;
+  pcid UUID;
 BEGIN
 
+  if( field_id IS NULL ) Then
+    select uuid_generate_v4() into field_id;
+  END IF;
   select get_source_id(source_name) into scid;
   select get_site_id(site_name) into sid;
   select get_trial_id(trial_name) into tid;
@@ -74,11 +78,11 @@ BEGIN
   END IF;
   
   INSERT INTO field (
-    trial_id, site_id, name, water_stress, nitrogen_stress, bedded,
+    field_id, trial_id, site_id, name, water_stress, nitrogen_stress, bedded,
     trial_group, crop_id, crop_description, previous_crop_id, previous_crop_description, 
     source_id
   ) VALUES (
-    tid, sid, name, water_stress, nitrogen_stress, bedded,
+    field_id, tid, sid, name, water_stress, nitrogen_stress, bedded,
     trial_group, cid, crop_description, pcid, previous_crop_description,
     scid
   ) RETURNING field_id into fid;
@@ -95,7 +99,7 @@ END;
 $$ LANGUAGE plpgsql;
 
 CREATE OR REPLACE FUNCTION update_field (
-  field_id_in integer,
+  field_id_in UUID,
   trial_name_in text, 
   site_name_in text, 
   name_in text, 
@@ -108,11 +112,11 @@ CREATE OR REPLACE FUNCTION update_field (
   previous_crop_in text, 
   previous_crop_description_in text) RETURNS void AS $$   
 DECLARE
-  sid integer;
-  fid integer;
-  tid INTEGER;
-  cid INTEGER;
-  pcid INTEGER;
+  sid UUID;
+  fid UUID;
+  tid UUID;
+  cid UUID;
+  pcid UUID;
 BEGIN
 
   select get_site_id(site_name_in) into sid;
@@ -138,10 +142,10 @@ END;
 $$ LANGUAGE plpgsql;
 
 CREATE OR REPLACE FUNCTION delete_fields (
-  field_id_in integer,
+  field_id_in UUID,
   source_name_in text) RETURNS void AS $$   
 DECLARE
-  scid INTEGER;
+  scid UUID;
 BEGIN
 
   if( source_name_in IS NOT NULL ) THEN
@@ -165,6 +169,7 @@ CREATE OR REPLACE FUNCTION insert_field_from_trig()
 RETURNS TRIGGER AS $$   
 BEGIN
   PERFORM insert_field(
+    field_id := NEW.field_id,
     trial_name := NEW.trial_name,
     site_name := NEW.site_name,
     name := NEW.name,
@@ -225,10 +230,10 @@ $$ LANGUAGE plpgsql;
 
 
 -- FUNCTION GETTER
-CREATE OR REPLACE FUNCTION get_field_id(trial_name_in text, field_name_in text) RETURNS INTEGER AS $$   
+CREATE OR REPLACE FUNCTION get_field_id(trial_name_in text, field_name_in text) RETURNS UUID AS $$   
 DECLARE
-  fid INTEGER;
-  tid INTEGER;
+  fid UUID;
+  tid UUID;
 BEGIN
 
   SELECT get_trial_id(trial_name_in) INTO tid;
