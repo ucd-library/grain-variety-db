@@ -22,7 +22,7 @@ CREATE OR REPLACE VIEW trial_view AS
 
 -- FUNCTIONS
 CREATE OR REPLACE FUNCTION insert_trial (
-  trail_id UUID,
+  trial_id UUID,
   name text,
   description text,
   source_name text) RETURNS void AS $$   
@@ -30,8 +30,8 @@ DECLARE
   source_id UUID;
 BEGIN
 
-  if( trail_id IS NULL ) Then
-    select uuid_generate_v4() into trail_id;
+  if( trial_id IS NULL ) Then
+    select uuid_generate_v4() into trial_id;
   END IF;
   select get_source_id(source_name) into source_id;
 
@@ -71,7 +71,7 @@ CREATE OR REPLACE FUNCTION insert_trial_from_trig()
 RETURNS TRIGGER AS $$   
 BEGIN
   PERFORM insert_trial(
-    trail_id := NEW.trail_id,
+    trial_id := NEW.trial_id,
     name := NEW.name,
     description := NEW.description,
     source_name := NEW.source_name

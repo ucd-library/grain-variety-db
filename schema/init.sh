@@ -6,6 +6,7 @@ export PGSERVICE=graindev
 SCHEMA=grain;
 psql -c "CREATE SCHEMA IF NOT EXISTS $SCHEMA;"
 export PGOPTIONS=--search_path=$SCHEMA,public
+psql -c "CREATE EXTENSION IF NOT EXISTS \"uuid-ossp\";"
 
 # types
 psql -f ./tables/enums/region.sql
@@ -51,9 +52,9 @@ insert_view () {
 }
 
 # PROJECT DATA
-# insert_view ../data/trial_view
-# insert_view ../data/site_view_kml
-# insert_view ../data/crop_view
-# insert_view ../data/variety_view
-# insert_view ../data/field_view
-# insert_view ../data/plot_view
+insert_view ../data/trial_view
+insert_view ../data/site_view_kml
+insert_view ../data/crop_view
+insert_view ../data/variety_view
+insert_view ../data/field_view
+insert_view ../data/plot_view

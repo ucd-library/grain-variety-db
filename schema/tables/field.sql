@@ -85,12 +85,12 @@ BEGIN
     field_id, tid, sid, name, water_stress, nitrogen_stress, bedded,
     trial_group, cid, crop_description, pcid, previous_crop_description,
     scid
-  ) RETURNING field_id into fid;
+  );
 
   INSERT INTO location (
     field_id, plot_id, source_id
   ) VALUES (
-    fid, NULL, scid
+    field_id, NULL, scid
   );
 
 EXCEPTION WHEN raise_exception THEN
