@@ -1,7 +1,7 @@
 #! /bin/bash
 
-export PGSERVICE=graindev
-#export PGSERVICE=grain
+#export PGSERVICE=graindev
+export PGSERVICE=grain
 
 SCHEMA=grain;
 psql -c "CREATE SCHEMA IF NOT EXISTS $SCHEMA;"
@@ -27,13 +27,14 @@ psql -f ./tables/site.sql
 
 psql -f ./tables/crop.sql
 psql -f ./tables/variety.sql
+psql -f ./tables/regional_variety.sql
+psql -f ./tables/variety_label.sql
 psql -f ./tables/field.sql
 psql -f ./tables/plot.sql
 psql -f ./tables/location.sql
 
-# psql -f ./tables/variety_name.sql
+
 # psql -f ./tables/variety_parentage.sql
-# psql -f ./tables/variety_region.sql
 
 # Add permissions
 psql -c "grant usage on schema $SCHEMA to public;"
