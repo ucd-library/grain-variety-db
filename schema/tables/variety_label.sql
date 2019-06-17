@@ -4,8 +4,9 @@ CREATE TABLE variety_label (
   variety_label_id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   source_id UUID REFERENCES source NOT NULL,
   variety_id UUID REFERENCES variety NOT NULL,
-  label TEXT UNIQUE NOT NULL,
-  current BOOLEAN
+  label TEXT NOT NULL,
+  current BOOLEAN,
+  UNIQUE(variety_id, label)
 );
 
 -- VIEW
@@ -22,7 +23,7 @@ LEFT JOIN source sc ON v.source_id = sc.source_id
 LEFT JOIN variety vy on v.variety_id = vy.variety_id;
 
 -- FUNCTIONS
-CREATE OR REPLACE FUNCTION insert_variety_label (
+CREATE OR REPLACE FUNCTION grain.insert_variety_label (
   variety_label_id UUID,
   variety_name TEXT,
   label TEXT,
@@ -37,7 +38,7 @@ BEGIN
     SELECT uuid_generate_v4() INTO variety_label_id;
   END IF;
   SELECT get_source_id(source_name) INTO source_id;
-  SELECT get_varity_id(variety_name) INTO vid;
+  SELECT get_variety_id(variety_name) INTO vid;
 
   INSERT INTO variety_label (
     variety_label_id, variety_id, label, current, source_id

@@ -1,7 +1,7 @@
 #! /bin/bash
 
-#export PGSERVICE=graindev
-export PGSERVICE=grain
+export PGSERVICE=graindev
+#export PGSERVICE=grain
 
 SCHEMA=grain;
 psql -c "CREATE SCHEMA IF NOT EXISTS $SCHEMA;"
@@ -13,6 +13,7 @@ psql -f ./tables/enums/region.sql
 psql -f ./tables/enums/trial_group.sql
 psql -f ./tables/enums/release_status.sql
 psql -f ./tables/enums/crop_classification.sql
+psql -f ./tables/enums/crop_sub_type.sql
 
 # 3rd Party GIS DATA
 psql -c 'DROP TABLE IF EXISTS ca_counties CASCADE';
