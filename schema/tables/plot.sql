@@ -12,6 +12,9 @@ CREATE TABLE plot (
   description text,
   variety_id UUID REFERENCES variety NOT NULL
 );
+CREATE INDEX plot_source_id_idx ON plot(source_id);
+CREATE INDEX plot_field_id_idx ON plot(field_id);
+CREATE INDEX plot_variety_id_idx ON plot(variety_id);
 
 -- VIEW
 CREATE OR REPLACE VIEW plot_view AS
@@ -64,6 +67,12 @@ BEGIN
     plot_id, field_id, block, range, row, plot_number, description, variety_id, source_id
   );
 
+  INSERT INTO location (
+    field_id, plot_id, source_id
+  ) VALUES (
+    field_id, plot_id, source_id
+  );
+
 EXCEPTION WHEN raise_exception THEN
   RAISE;
 END; 
@@ -93,6 +102,29 @@ BEGIN
     fid, block, range, row, plot_number, description, vid
   ) WHERE
     plot_id = plot_id_in;
+
+EXCEPTION WHEN raise_exception THEN
+  RAISE;
+END; 
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION delete_plots (
+  plot_id_in UUID,
+  source_name_in text) RETURNS void AS $$   
+DECLARE
+  scid UUID;
+BEGIN
+
+  IF( source_name_in IS NOT NULL ) THEN
+    SELECT get_source_id(source_name_in) into scid;
+    DELETE FROM location WHERE source_id = scid;
+    DELETE FROM plot WHERE source_id = scid;
+  END IF;
+
+  IF( plot_id_in IS NOT NULL ) THEN
+    DELETE FROM location where plot_id = plot_id_in;
+    DELETE FROM plot where plot_id = plot_id_in;
+  END IF;
 
 EXCEPTION WHEN raise_exception THEN
   RAISE;
@@ -142,8 +174,22 @@ EXCEPTION WHEN raise_exception THEN
 END; 
 $$ LANGUAGE plpgsql;
 
+CREATE OR REPLACE FUNCTION delete_plots_from_trig() 
+RETURNS TRIGGER AS $$   
+BEGIN
+  PERFORM delete_plots (
+    plot_id_in := OLD.plot_id,
+    source_name_in := OLD.source_name
+  );
+  RETURN OLD;
+
+EXCEPTION WHEN raise_exception THEN
+  RAISE;
+END; 
+$$ LANGUAGE plpgsql;
+
 -- FUNCTION GETTER
-CREATE OR REPLACE FUNCTION get_plot_id(trial_name_in text, field_name text, plot_number text) RETURNS UUID AS $$   
+CREATE OR REPLACE FUNCTION get_plot_id(trial_name_in text, field_name_in text, plot_number_in integer) RETURNS UUID AS $$   
 DECLARE
   pid UUID;
   fid UUID;
@@ -157,10 +203,10 @@ BEGIN
     plot p 
   where  
     p.field_id = fid AND
-    p.plot_number = plot_number;
+    p.plot_number = plot_number_in;
 
   if (pid is NULL) then
-    RAISE EXCEPTION 'Unknown plot: % % %', trial_name_in, field_name, plot_number;
+    RAISE EXCEPTION 'Unknown plot: % % %', trial_name_in, field_name_in, plot_number_in;
   END IF;
   
   RETURN pid;
@@ -177,3 +223,8 @@ CREATE TRIGGER plot_update_trig
   INSTEAD OF UPDATE ON
   plot_view FOR EACH ROW 
   EXECUTE PROCEDURE update_plot_from_trig();
+
+CREATE TRIGGER plot_delete_trig
+  INSTEAD OF DELETE ON
+  plot_view FOR EACH ROW 
+  EXECUTE PROCEDURE delete_plots_from_trig();

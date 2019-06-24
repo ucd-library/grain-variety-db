@@ -15,6 +15,7 @@ CREATE TABLE field (
   previous_crop_id UUID REFERENCES CROP,
   previous_crop_description TEXT
 );
+CREATE INDEX location_source_id_idx ON location(source_id);
 
 -- VIEW
 CREATE OR REPLACE VIEW field_view AS 
@@ -148,10 +149,8 @@ DECLARE
   scid UUID;
 BEGIN
 
-  if( source_name_in IS NOT NULL ) THEN
+  IF( source_name_in IS NOT NULL ) THEN
     SELECT get_source_id(source_name_in) into scid;
-
-    DELETE FROM location WHERE source_id = scid;
     DELETE FROM location WHERE source_id = scid;
   END IF;
 
