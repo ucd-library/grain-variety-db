@@ -90,7 +90,7 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- FUNCTION GETTER
-CREATE OR REPLACE FUNCTION get_measurement_device_id(name_id text) RETURNS UUID AS $$   
+CREATE OR REPLACE FUNCTION get_measurement_device_id(name_in text) RETURNS UUID AS $$   
 DECLARE
   mid UUID;
 BEGIN

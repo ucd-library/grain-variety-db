@@ -4,7 +4,7 @@ CREATE TABLE measurement (
   measurement_id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   source_id UUID REFERENCES source NOT NULL,
   name TEXT NOT NULL,
-  unit TEXT NOT NULL,
+  unit TEXT,
   measurement_device_id UUID REFERENCES measurement_device,
   description TEXT,
   UNIQUE(name, unit, measurement_device_id)
