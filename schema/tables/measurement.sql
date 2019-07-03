@@ -42,7 +42,9 @@ BEGIN
     SELECT uuid_generate_v4() INTO measurement_id;
   END IF;
   SELECT get_source_id(source_name) INTO source_id;
-  SELECT get_measurement_device_id(device) INTO mdid;
+  IF device IS NOT NULL  THEN
+    SELECT get_measurement_device_id(device) INTO mdid;
+  END IF;
 
   INSERT INTO measurement (
     measurement_id, name, measurement_device_id, unit, description, source_id
@@ -65,7 +67,9 @@ DECLARE
   mdid UUID;
 BEGIN
 
-  SELECT get_measurement_device_id(device_in) INTO mdid;
+  IF device IS NOT NULL  THEN
+    SELECT get_measurement_device_id(device_in) INTO mdid;
+  END IF;
 
   UPDATE measurement SET (
     name, measurement_device_id, unit, description
