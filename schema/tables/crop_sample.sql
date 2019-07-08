@@ -105,8 +105,8 @@ BEGIN
   IF date_in IS NOT NULL THEN
     select extract(YEAR FROM date_in) into year_in;
   END IF;
-  SELECT get_crop_sampling_event_id(trial, field, plot_number_in, year, growth_stage_in) into cseid;
-  SELECT get_crop_part_measurement_id(crop, plant_part, measurement_name, measurement_device, measurement_unit) into cpmid;
+  SELECT get_crop_sampling_event_id(trial_in, field_in, plot_number_in, year_in, growth_stage_in) into cseid;
+  SELECT get_crop_part_measurement_id(crop_in, plant_part_in, measurement_name_in, measurement_device_in, measurement_unit_in) into cpmid;
 
   UPDATE crop_sample SET (
     crop_sampling_event_id, crop_part_measurement_id, amount, description

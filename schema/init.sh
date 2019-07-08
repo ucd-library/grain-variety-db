@@ -44,6 +44,14 @@ psql -f ./tables/crop_part_measurement.sql;
 psql -f ./tables/crop_sampling_event.sql;
 psql -f ./tables/crop_sample.sql;
 
+psql -f ./tables/soil_sampling_event.sql
+psql -f ./tables/soil_sample.sql
+
+psql -f ./tables/weed_treatment_type.sql
+psql -f ./tables/weed_treatment_event.sql
+
+psql -f ./tables/tillage_event.sql
+
 # psql -f ./tables/variety_parentage.sql
 
 # Add permissions
@@ -52,22 +60,22 @@ psql -c "grant all on all tables in schema $SCHEMA to public;"
 psql -c "grant execute on all functions in schema $SCHEMA to public;"
 psql -c "GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA $SCHEMA TO public;"
 
-insert_view () {
-  v=$(basename $1);
-  for f in $1/* ; do
-    filename=$(basename $f);
-    if [[ $filename =~ ^.*.csv$ && ! $filename =~ ^(field|plot)_1819.*.csv$  ]]; then
-      pgdm insert --pg-service $PGSERVICE --file $f --table $v
-    fi
-  done
-}
+# insert_view () {
+#   v=$(basename $1);
+#   for f in $1/* ; do
+#     filename=$(basename $f);
+#     if [[ $filename =~ ^.*.csv$ && ! $filename =~ ^(field|plot)_1819.*.csv$  ]]; then
+#       pgdm insert --pg-service $PGSERVICE --file $f --table $v
+#     fi
+#   done
+# }
 
-# PROJECT DATA
-insert_view ../data/trial_view
-insert_view ../data/site_view_kml
-insert_view ../data/crop_view
-insert_view ../data/crop_parts
-insert_view ../data/variety_view
-insert_view ../data/variety_label_view
-insert_view ../data/field_view
-insert_view ../data/plot_view
+# # PROJECT DATA
+# insert_view ../data/trial_view
+# insert_view ../data/site_view_kml
+# insert_view ../data/crop_view
+# insert_view ../data/crop_parts
+# insert_view ../data/variety_view
+# insert_view ../data/variety_label_view
+# insert_view ../data/field_view
+# insert_view ../data/plot_view

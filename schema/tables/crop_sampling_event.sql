@@ -10,7 +10,7 @@ CREATE TABLE crop_sampling_event (
   UNIQUE(location_id, year, growth_stage)
 );
 CREATE INDEX crop_sampling_event_source_id_idx ON crop_sampling_event(source_id);
-CREATE INDEX crop_sampling_event_location_id_idx ON crop_sampling_event(source_id);
+CREATE INDEX crop_sampling_event_location_id_idx ON crop_sampling_event(location_id);
 
 -- VIEW
 CREATE OR REPLACE VIEW crop_sampling_event_view AS
@@ -33,7 +33,7 @@ LEFT JOIN location_view l on c.location_id = l.location_id;
 -- FUNCTIONS
 CREATE OR REPLACE FUNCTION insert_crop_sampling_event (
   crop_sampling_event_id UUID,
-  trail TEXT,
+  trial TEXT,
   field TEXT,
   plot_number INTEGER,
   year INTEGER,
@@ -41,7 +41,6 @@ CREATE OR REPLACE FUNCTION insert_crop_sampling_event (
   growth_stage INTEGER,
   source_name TEXT) RETURNS void AS $$   
 DECLARE
-  cid UUID;
   source_id UUID;
   lid UUID;
 BEGIN
@@ -53,7 +52,7 @@ BEGIN
     select extract(YEAR FROM date) into year;
   END IF;
   SELECT get_source_id(source_name) INTO source_id;
-  SELECT get_location_id(trail, field, plot_number) INTO lid;
+  SELECT get_location_id(trial, field, plot_number) INTO lid;
 
   INSERT INTO crop_sampling_event (
     crop_sampling_event_id, location_id, year, date, growth_stage, source_id
@@ -78,7 +77,7 @@ DECLARE
   lid UUID;
 BEGIN
 
-  SELECT get_location_id(trail, field, plot_number) INTO lid;
+  SELECT get_location_id(trial_in, field_in, plot_number_in) INTO lid;
   IF date_in IS NOT NULL THEN
     select extract(YEAR FROM date_in) into year_in;
   END IF;
