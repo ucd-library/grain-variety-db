@@ -50,6 +50,7 @@ psql -f ./tables/soil_sample.sql
 psql -f ./tables/weed_treatment_type.sql
 psql -f ./tables/weed_treatment_event.sql
 
+psql -f ./tables/planting.sql
 psql -f ./tables/tillage_event.sql
 
 # psql -f ./tables/variety_parentage.sql
