@@ -48,6 +48,9 @@ BEGIN
   IF( soil_sampling_event_id IS NULL ) THEN
     SELECT uuid_generate_v4() INTO soil_sampling_event_id;
   END IF;
+  IF date IS NOT NULL THEN
+    select extract(YEAR FROM date) into year;
+  END IF;
   SELECT get_source_id(source_name) INTO source_id;
   SELECT get_location_id(trial, field, plot_number) INTO lid;
 

@@ -53,6 +53,12 @@ psql -f ./tables/weed_treatment_event.sql
 psql -f ./tables/planting.sql
 psql -f ./tables/tillage_event.sql
 
+psql -f ./tables/fertilization_type.sql
+psql -f ./tables/fertilization_event.sql
+
+psql -f ./tables/irrigation_method.sql
+psql -f ./tables/irrigation_event.sql
+
 # psql -f ./tables/variety_parentage.sql
 
 # Add permissions
