@@ -68,7 +68,7 @@ BEGIN
     select extract(YEAR FROM date) into year;
   END IF;
   SELECT get_source_id(source_name) INTO source_id;
-  SELECT get_crop_sampling_event_id(trial, field, plot_number_in, year, growth_stage_in) into cseid;
+  SELECT get_crop_sampling_event_id(trial, field, plot_number, year, growth_stage) into cseid;
   SELECT get_crop_part_measurement_id(crop, plant_part, measurement_name, measurement_device, measurement_unit) into cpmid;
 
   INSERT INTO crop_sample (
@@ -86,7 +86,7 @@ CREATE OR REPLACE FUNCTION update_crop_sample (
   crop_sample_id_in UUID,
   trial_in TEXT,
   field_in TEXT,
-  plot_in TEXT,
+  plot_number_in TEXT,
   crop_in TEXT,
   plant_part_in TEXT,
   year_in INTEGER,
@@ -128,7 +128,7 @@ BEGIN
     crop_sample_id := NEW.crop_sample_id,
     trial := NEW.trial,
     field := NEW.field,
-    plot := NEW.plot,
+    plot_number := NEW.plot_number,
     crop := NEW.crop,
     plant_part := NEW.plant_part,
     year := NEW.year,
@@ -155,7 +155,7 @@ BEGIN
     crop_sample_id_in := NEW.crop_sample_id,
     trial_in := NEW.trial,
     field_in := NEW.field,
-    plot_in := NEW.plot,
+    plot_number_in := NEW.plot_number,
     crop_in := NEW.crop,
     plant_part_in := NEW.plant_part,
     year_in := NEW.year,

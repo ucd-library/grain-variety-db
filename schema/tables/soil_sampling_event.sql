@@ -144,7 +144,7 @@ DECLARE
   lid UUID;
 BEGIN
 
-  SELECT get_location(trial_name_in, field_name_in, plot_number_in) INTO lid; 
+  SELECT get_location_id(trial_name_in, field_name_in, plot_number_in) INTO lid; 
 
   SELECT 
     soil_sampling_event_id INTO sid 

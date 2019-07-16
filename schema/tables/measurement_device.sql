@@ -103,7 +103,7 @@ BEGIN
     name = name_in;
 
   IF (mid IS NULL) THEN
-    RAISE EXCEPTION 'Unknown measurement_device: %', name_in;
+    RAISE EXCEPTION 'Unknown measurement_device: "%"', name_in;
   END IF;
   
   RETURN mid;

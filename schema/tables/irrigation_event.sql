@@ -94,13 +94,13 @@ DECLARE
   imid UUID;
 BEGIN
 
-  IF date IS NOT NULL THEN
-    select extract(YEAR FROM date) into year;
+  IF date_in IS NOT NULL THEN
+    select extract(YEAR FROM date_in) into year_in;
   END IF;
   SELECT get_fertilization_method_id(irrigation_name, irrigation_unit) INTO imid;
 
   UPDATE irrigation_event SET (
-    location_id, growth_stage, year, date, irrigation_method_id, amount, description, 
+    location_id, growth_stage, year, date, irrigation_method_id, amount, description
   ) = (
     lid, growth_stage_in, year_in, date_in, imid, amount_in, description_in
   ) WHERE

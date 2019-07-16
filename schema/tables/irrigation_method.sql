@@ -113,7 +113,7 @@ BEGIN
   FROM 
     irrigation_method i 
   WHERE  
-    name = name_in,
+    name = name_in AND
     unit = unit_in;
 
   IF (iid IS NULL) THEN

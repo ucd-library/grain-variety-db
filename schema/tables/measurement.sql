@@ -42,7 +42,7 @@ BEGIN
     SELECT uuid_generate_v4() INTO measurement_id;
   END IF;
   SELECT get_source_id(source_name) INTO source_id;
-  IF device IS NOT NULL  THEN
+  IF device IS NOT NULL THEN
     SELECT get_measurement_device_id(device) INTO mdid;
   END IF;
 
@@ -67,7 +67,7 @@ DECLARE
   mdid UUID;
 BEGIN
 
-  IF device IS NOT NULL  THEN
+  IF device_in IS NOT NULL THEN
     SELECT get_measurement_device_id(device_in) INTO mdid;
   END IF;
 
@@ -126,7 +126,9 @@ DECLARE
   mdid UUID;
 BEGIN
 
-  SELECT get_measurement_device_id(device_in) INTO mdid;
+  IF device_in IS NOT NULL THEN
+    SELECT get_measurement_device_id(device_in) INTO mdid;
+  END IF;
 
   SELECT 
     measurement_id INTO mid 
