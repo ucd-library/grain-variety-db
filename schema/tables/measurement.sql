@@ -9,6 +9,7 @@ CREATE TABLE measurement (
   description TEXT,
   UNIQUE(name, unit, measurement_device_id)
 );
+CREATE INDEX measurement_source_id_idx ON measurement(source_id);
 
 -- VIEW
 CREATE OR REPLACE VIEW measurement_view AS
@@ -128,19 +129,57 @@ BEGIN
 
   IF device_in IS NOT NULL THEN
     SELECT get_measurement_device_id(device_in) INTO mdid;
+
+    IF unit_in IS NULL THEN
+      SELECT 
+        measurement_id INTO mid 
+      FROM 
+        measurement m 
+      WHERE  
+        name = name_in AND
+        unit IS NULL AND
+        measurement_device_id = mdid;
+    ELSE
+      SELECT 
+        measurement_id INTO mid 
+      FROM 
+        measurement m 
+      WHERE  
+        name = name_in AND
+        unit = unit_in AND
+        measurement_device_id = mdid;
+    END IF;
+
+  ELSE
+
+    IF unit_in IS NULL THEN
+
+      SELECT 
+        measurement_id INTO mid 
+      FROM 
+        measurement m 
+      WHERE  
+        name = name_in AND
+        unit IS NULL AND
+        measurement_device_id IS NULL;
+
+    ELSE 
+
+      SELECT 
+        measurement_id INTO mid 
+      FROM 
+        measurement m 
+      WHERE  
+        name = name_in AND
+        unit = unit_in AND
+        measurement_device_id IS NULL;
+
+    END IF;
+
   END IF;
 
-  SELECT 
-    measurement_id INTO mid 
-  FROM 
-    measurement m 
-  WHERE  
-    name = name_in AND
-    unit = unit_in AND
-    measurement_device_id = mdid;
-
   IF (mid IS NULL) THEN
-    RAISE EXCEPTION 'Unknown measurement: % % %', name_in, device_in, unit_in;
+    RAISE EXCEPTION 'Unknown measurement: name="%" device="%" unit="%"', name_in, device_in, unit_in;
   END IF;
   
   RETURN mid;

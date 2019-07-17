@@ -49,7 +49,7 @@ BEGIN
     SELECT uuid_generate_v4() INTO crop_part_measurement_id;
   END IF;
   SELECT get_source_id(source_name) INTO source_id;
-  SELECT get_crop_part_id(crop, plant_part) INTO cpid;
+  SELECT get_crop_parts_id(crop, plant_part) INTO cpid;
   SELECT get_measurement_id(measurement_name, measurement_device, measurement_unit) INTO mid;
 
   INSERT INTO crop_part_measurement (
@@ -75,11 +75,11 @@ DECLARE
   mid UUID;
 BEGIN
 
-  SELECT get_crop_part_id(crop, plant_part) INTO cpid;
-  SELECT get_measurement_id(measurement_name, measurement_device, measurement_unit) INTO mid;
+  SELECT get_crop_parts_id(crop_in, plant_part_in) INTO cpid;
+  SELECT get_measurement_id(measurement_name_in, measurement_device_in, measurement_unit_in) INTO mid;
 
   UPDATE crop_part_measurement SET (
-    measurement_id, crop_part_id 
+    measurement_id, crop_parts_id 
   ) = (
     mid, cpid
   ) WHERE
@@ -138,18 +138,18 @@ DECLARE
   mid UUID;
 BEGIN
 
-  SELECT get_crop_part_id(crop, plant_part) INTO cpid;
+  SELECT get_crop_parts_id(crop, plant_part) INTO cpid;
   SELECT get_measurement_id(measurement_name, measurement_device, measurement_unit) INTO mid;
   SELECT 
     crop_part_measurement_id INTO cid 
   FROM 
     crop_part_measurement c 
   WHERE
-    crop_part_id = cpid AND
+    crop_parts_id = cpid AND
     measurement_id = mid;
 
   IF (cid IS NULL) THEN
-    RAISE EXCEPTION 'Unknown crop_part_measurement: % % % % %',  crop, plant_part, measurement_name, measurement_device, measurement_unit;
+    RAISE EXCEPTION 'Unknown crop_part_measurement: crop="%" plant_part="%" measurement_name="%" measurement_device="%" measurement_unit="%"',  crop, plant_part, measurement_name, measurement_device, measurement_unit;
   END IF;
   
   RETURN cid;

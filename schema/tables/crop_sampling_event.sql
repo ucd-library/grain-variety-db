@@ -69,7 +69,7 @@ CREATE OR REPLACE FUNCTION update_crop_sampling_event (
   crop_sampling_event_id_in UUID,
   trial_in TEXT,
   field_in TEXT,
-  plot_in TEXT,
+  plot_number_in TEXT,
   year_in INTEGER,
   date_in DATE,
   growth_stage_in INTEGER) RETURNS void AS $$   
@@ -102,7 +102,7 @@ BEGIN
     crop_sampling_event_id := NEW.crop_sampling_event_id,
     trial := NEW.trial,
     field := NEW.field,
-    plot := NEW.plot,
+    plot_number := NEW.plot_number,
     year := NEW.year,
     date := NEW.date,
     growth_stage := NEW.growth_stage,
@@ -122,7 +122,7 @@ BEGIN
     crop_sampling_event_id_in := NEW.crop_sampling_event_id,
     trial_in := NEW.trial,
     field_in := NEW.field,
-    plot_in := NEW.plot,
+    plot_number_in := NEW.plot_number,
     year_in := NEW.year,
     date_in := NEW.date,
     growth_stage_in := NEW.growth_stage
@@ -143,14 +143,25 @@ BEGIN
 
   SELECT get_location_id(trial_name_in, field_name_in, plot_number_in) INTO lid; 
 
-  SELECT 
-    crop_sampling_event_id INTO cid 
-  FROM 
-    crop_sampling_event c 
-  WHERE
-    lid = location_id AND
-    year_in = year AND
-    growth_stage_in = growth_stage;
+  IF growth_stage_in IS NULL THEN
+    SELECT 
+      crop_sampling_event_id INTO cid 
+    FROM 
+      crop_sampling_event c 
+    WHERE
+      lid = location_id AND
+      year_in = year AND
+      growth_stage IS NULL;
+  ELSE
+    SELECT 
+      crop_sampling_event_id INTO cid 
+    FROM 
+      crop_sampling_event c 
+    WHERE
+      lid = location_id AND
+      year_in = year AND
+      growth_stage_in = growth_stage;
+  END IF;
 
 
   IF (cid IS NULL) THEN

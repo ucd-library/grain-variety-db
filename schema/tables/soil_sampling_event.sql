@@ -146,14 +146,25 @@ BEGIN
 
   SELECT get_location_id(trial_name_in, field_name_in, plot_number_in) INTO lid; 
 
-  SELECT 
-    soil_sampling_event_id INTO sid 
-  FROM 
-    soil_sampling_event s 
-  WHERE  
-    lid = location_id AND
-    year_in = year AND
-    growth_stage_in = growth_stage;
+  IF growth_stage_in IS NULL THEN
+    SELECT 
+      soil_sampling_event_id INTO sid 
+    FROM 
+      soil_sampling_event s 
+    WHERE  
+      lid = location_id AND
+      year_in = year AND
+      growth_stage IS NULL;
+  ELSE
+    SELECT 
+      soil_sampling_event_id INTO sid 
+    FROM 
+      soil_sampling_event s 
+    WHERE  
+      lid = location_id AND
+      year_in = year AND
+      growth_stage_in = growth_stage;
+  END IF;
 
   IF (sid IS NULL) THEN
     RAISE EXCEPTION 'Unknown soil_sampling_event: trial %, field %, plot_number %, year %, growth_stage %', trial_name_in, field_name_in, plot_number_in, year_in, growth_stage_in;
