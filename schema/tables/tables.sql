@@ -34,3 +34,5 @@ INSERT INTO tables (table_view, name, uid) VALUES ('planting_view', 'planting', 
 
 INSERT INTO tables (table_view, name, uid) VALUES ('fertilization_type_view', 'fertilization_type', 'fertilization_type_id');
 INSERT INTO tables (table_view, name, uid) VALUES ('fertilization_event_view', 'fertilization_event', 'fertilization_event_id');
+
+INSERT INTO tables (table_view, name, uid) VALUES ('note_view', 'note', 'note_id');

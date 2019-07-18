@@ -18,6 +18,7 @@ CREATE OR REPLACE VIEW crop_sample_view AS
     c.crop_sample_id AS crop_sample_id,
     cse.trial as trial,
     cse.site as site,
+    cse.season as season,
     cse.field as field,
     cse.plot_number as plot_number,
     cse.crop as crop,

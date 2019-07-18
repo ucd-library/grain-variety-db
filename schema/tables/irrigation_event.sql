@@ -4,7 +4,7 @@ CREATE TABLE irrigation_event (
   irrigation_event_id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   source_id UUID REFERENCES source NOT NULL,
   location_id UUID REFERENCES location NOT NULL,
-  growth_stage INTEGER NOT NULL,
+  growth_stage INTEGER,
   date DATE,
   year INTEGER NOT NULL,
   irrigation_method_id UUID REFERENCES irrigation_method NOT NULL,
@@ -39,7 +39,6 @@ LEFT JOIN irrigation_method im on i.irrigation_method_id = im.irrigation_method_
 CREATE OR REPLACE FUNCTION insert_irrigation_event (
   irrigation_event_id UUID,
   trial TEXT,
-  site TEXT,
   field TEXT,
   plot_number TEXT,
   growth_stage INTEGER,
@@ -79,7 +78,6 @@ $$ LANGUAGE plpgsql;
 CREATE OR REPLACE FUNCTION update_irrigation_event (
   irrigation_event_id_in UUID,
   trial_in TEXT,
-  site_in TEXT,
   field_in TEXT,
   plot_number_in TEXT,
   growth_stage_in INTEGER,
@@ -118,7 +116,6 @@ BEGIN
   PERFORM insert_irrigation_event(
     irrigation_event_id := NEW.irrigation_event_id,
     trial := NEW.trial,
-    site := NEW.site,
     field := NEW.field,
     plot_number := NEW.plot_number,
     growth_stage := NEW.growth_stage,
@@ -143,7 +140,6 @@ BEGIN
   PERFORM update_irrigation_event(
     irrigation_event_id_in := NEW.irrigation_event_id,
     trial_in := NEW.trial,
-    site_in := NEW.site,
     field_in := NEW.field,
     plot_number_in := NEW.plot_number,
     growth_stage_in := NEW.growth_stage,

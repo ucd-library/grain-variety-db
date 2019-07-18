@@ -94,13 +94,18 @@ DECLARE
 BEGIN
 
   select get_variety_id(variety_name_in) into vid;
-  select get_field_id(trial_name, field_name_in) into fid;
+  select get_field_id(trial_name_in, field_name_in) into fid;
 
   UPDATE plot SET (
     field_id, block, range, row, plot_number, description, variety_id
   ) = (
-    fid, block, range, row, plot_number, description, vid
+    fid, block_in, range_in, row_in, plot_number_in, description_in, vid
   ) WHERE
+    plot_id = plot_id_in;
+
+  UPDATE location SET 
+    field_id = fid
+  WHERE
     plot_id = plot_id_in;
 
 EXCEPTION WHEN raise_exception THEN

@@ -16,6 +16,7 @@ CREATE OR REPLACE VIEW location_view AS
     l.location_id AS location_id,
     t.name as trial,
     s.name as site,
+    s.season as season,
     f.name as field,
     p.plot_number as plot_number,
     cr.name as crop
@@ -70,13 +71,23 @@ BEGIN
     SELECT get_plot_id(trial_name_in, field_name_in, plot_number_in) INTO pid;
   END IF;
 
-  SELECT 
-    location_id INTO lid 
-  FROM
-    location
-  WHERE 
-    field_id = fid AND
-    plot_id = pid;
+  IF pid IS NULL THEN
+    SELECT 
+      location_id INTO lid 
+    FROM
+      location
+    WHERE 
+      field_id = fid AND
+      plot_id IS NULL;
+  ELSE
+    SELECT 
+      location_id INTO lid 
+    FROM
+      location
+    WHERE 
+      field_id = fid AND
+      plot_id = pid;
+  END IF;
 
   IF (lid is NULL) then
     RAISE EXCEPTION 'Unknown location: % % %', trial_name_in, field_name_in, plot_number_in;

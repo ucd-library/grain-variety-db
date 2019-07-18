@@ -18,6 +18,7 @@ CREATE OR REPLACE VIEW crop_sampling_event_view AS
     c.crop_sampling_event_id AS crop_sampling_event_id,
     l.trial as trial,
     l.site as site,
+    l.season as season,
     l.field as field,
     l.plot_number as plot_number,
     l.crop as crop,
@@ -69,7 +70,7 @@ CREATE OR REPLACE FUNCTION update_crop_sampling_event (
   crop_sampling_event_id_in UUID,
   trial_in TEXT,
   field_in TEXT,
-  plot_number_in TEXT,
+  plot_number_in INTEGER,
   year_in INTEGER,
   date_in DATE,
   growth_stage_in INTEGER) RETURNS void AS $$   
