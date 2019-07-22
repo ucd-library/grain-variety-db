@@ -17,9 +17,9 @@ CREATE INDEX irrigation_event_source_id_idx ON irrigation_event(source_id);
 CREATE OR REPLACE VIEW irrigation_event_view AS
   SELECT
     i.irrigation_event_id AS irrigation_event_id,
-    l.trial as trial,
-    l.site as site,
-    l.field as field,
+    l.trial_name as trial_name,
+    l.site_name as site_name,
+    l.field_name as field_name,
     l.plot_number as plot_number,
     i.growth_stage as growth_stage,
     i.year as year,
@@ -115,8 +115,8 @@ RETURNS TRIGGER AS $$
 BEGIN
   PERFORM insert_irrigation_event(
     irrigation_event_id := NEW.irrigation_event_id,
-    trial := NEW.trial,
-    field := NEW.field,
+    trial := NEW.trial_name,
+    field := NEW.field_name,
     plot_number := NEW.plot_number,
     growth_stage := NEW.growth_stage,
     year := NEW.year,
@@ -139,8 +139,8 @@ RETURNS TRIGGER AS $$
 BEGIN
   PERFORM update_irrigation_event(
     irrigation_event_id_in := NEW.irrigation_event_id,
-    trial_in := NEW.trial,
-    field_in := NEW.field,
+    trial_in := NEW.trial_name,
+    field_in := NEW.field_name,
     plot_number_in := NEW.plot_number,
     growth_stage_in := NEW.growth_stage,
     year_in := NEW.year,

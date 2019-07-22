@@ -16,9 +16,9 @@ CREATE INDEX fertilization_event_source_id_idx ON fertilization_event(source_id)
 CREATE OR REPLACE VIEW fertilization_event_view AS
   SELECT
     f.fertilization_event_id AS fertilization_event_id,
-    l.trial as trial,
-    l.site as site,
-    l.field as field,
+    l.trial_name as trial_name,
+    l.site_name as site_name,
+    l.field_name as field_name,
     l.plot_number as plot_number,
     f.year as year,
     f.date as date,
@@ -37,7 +37,6 @@ LEFT JOIN fertilization_type ft on f.fertilization_type_id = ft.fertilization_ty
 CREATE OR REPLACE FUNCTION insert_fertilization_event (
   fertilization_event_id UUID,
   trial TEXT,
-  site TEXT,
   field TEXT,
   plot_number TEXT,
   year INTEGER,
@@ -77,7 +76,6 @@ $$ LANGUAGE plpgsql;
 CREATE OR REPLACE FUNCTION update_fertilization_event (
   fertilization_event_id_in UUID,
   trial_in TEXT,
-  site_in TEXT,
   field_in TEXT,
   plot_number_in TEXT,
   year_in INTEGER,
@@ -115,9 +113,8 @@ RETURNS TRIGGER AS $$
 BEGIN
   PERFORM insert_fertilization_event(
     fertilization_event_id := NEW.fertilization_event_id,
-    trial := NEW.trial,
-    site := NEW.site,
-    field := NEW.field,
+    trial := NEW.trial_name,
+    field := NEW.field_name,
     plot_number := NEW.plot_number,
     year := NEW.year,
     date := NEW.date,
@@ -139,9 +136,8 @@ RETURNS TRIGGER AS $$
 BEGIN
   PERFORM update_fertilization_event(
     fertilization_event_id_in := NEW.fertilization_event_id,
-    trial_in := NEW.trial,
-    site_in := NEW.site,
-    field_in := NEW.field,
+    trial_in := NEW.trial_name,
+    field_in := NEW.field_name,
     plot_number_in := NEW.plot_number,
     year_in := NEW.year,
     date_in := NEW.date,

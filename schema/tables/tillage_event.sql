@@ -14,9 +14,9 @@ CREATE INDEX tillage_event_source_id_idx ON tillage_event(source_id);
 CREATE OR REPLACE VIEW tillage_event_view AS
   SELECT
     t.tillage_event_id AS tillage_event_id,
-    l.trial as trial,
-    l.site as site,
-    l.field as field,
+    l.trial_name as trial_name,
+    l.site_name as site_name,
+    l.field_name as field_name,
     l.plot_number as plot_number,
     t.year as year,
     t.date as date,
@@ -31,7 +31,6 @@ LEFT JOIN location_view l on t.location_id = l.location_id;
 CREATE OR REPLACE FUNCTION insert_tillage_event (
   tillage_event_id UUID,
   trial TEXT,
-  site TEXT,
   field TEXT,
   plot_number INTEGER,
   year INTEGER,
@@ -63,7 +62,6 @@ $$ LANGUAGE plpgsql;
 CREATE OR REPLACE FUNCTION update_tillage_event (
   tillage_event_id_in UUID,
   trial_in TEXT,
-  site_in TEXT,
   field_in TEXT,
   plot_number_in INTEGER,
   year_in INTEGER,
@@ -93,9 +91,8 @@ RETURNS TRIGGER AS $$
 BEGIN
   PERFORM insert_tillage_event(
     tillage_event_id := NEW.tillage_event_id,
-    trial := NEW.trial,
-    site := NEW.site,
-    field := NEW.field,
+    trial := NEW.trial_name,
+    field := NEW.field_name,
     plot_number := NEW.plot_number,
     year := NEW.year,
     date := NEW.date,
@@ -114,9 +111,8 @@ RETURNS TRIGGER AS $$
 BEGIN
   PERFORM update_tillage_event(
     tillage_event_id_in := NEW.tillage_event_id,
-    trial_in := NEW.trial,
-    site_in := NEW.site,
-    field_in := NEW.field,
+    trial_in := NEW.trial_name,
+    field_in := NEW.field_name,
     plot_number_in := NEW.plot_number,
     year_in := NEW.year,
     date_in := NEW.date,

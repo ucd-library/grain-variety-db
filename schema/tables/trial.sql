@@ -12,7 +12,7 @@ CREATE OR REPLACE VIEW trial_view AS
   SELECT
     t.trial_id as trial_id,
     sc.name as source_name,
-    t.name as name,
+    t.name as trial_name,
     t.description as description
   FROM
     trial t,
@@ -72,7 +72,7 @@ RETURNS TRIGGER AS $$
 BEGIN
   PERFORM insert_trial(
     trial_id := NEW.trial_id,
-    name := NEW.name,
+    name := NEW.trial_name,
     description := NEW.description,
     source_name := NEW.source_name
   );
@@ -88,7 +88,7 @@ RETURNS TRIGGER AS $$
 BEGIN
   PERFORM update_trial(
     trial_id_in := NEW.trial_id,
-    name_in := NEW.name,
+    name_in := NEW.trial_name,
     description_in := NEW.description
   );
   RETURN NEW;
@@ -105,13 +105,6 @@ DECLARE
 BEGIN
 
   select trial_id into tid from trial where name = name_in;
-
-  -- select 
-  --   trial_id into tid 
-  -- from 
-  --   trial t 
-  -- where  
-  --   name = name_in;
 
   if (tid is NULL) then
     RAISE EXCEPTION 'Unknown trial: %', name_in;

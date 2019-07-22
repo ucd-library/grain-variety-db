@@ -18,9 +18,9 @@ CREATE INDEX soil_sample_measurement_id_idx ON soil_sample(measurement_id);
 CREATE OR REPLACE VIEW soil_sample_view AS
   SELECT
     s.soil_sample_id AS soil_sample_id,
-    sse.trial as trial,
-    sse.site as site,
-    sse.field as field,
+    sse.trial_name as trial_name,
+    sse.site_name as site_name,
+    sse.field_name as field_name,
     sse.plot_number as plot_number,
     sse.year as year,
     sse.date as date,
@@ -44,7 +44,6 @@ LEFT JOIN measurement_view m on s.measurement_id = m.measurement_id;
 CREATE OR REPLACE FUNCTION insert_soil_sample (
   soil_sample_id UUID,
   trial TEXT,
-  site TEXT,
   field TEXT,
   plot_number INTEGER,
   year INTEGER,
@@ -90,7 +89,6 @@ $$ LANGUAGE plpgsql;
 CREATE OR REPLACE FUNCTION update_soil_sample (
   soil_sample_id_in UUID,
   trial_in TEXT,
-  site_in TEXT,
   field_in TEXT,
   plot_number_in INTEGER,
   year_in INTEGER,
@@ -129,9 +127,8 @@ RETURNS TRIGGER AS $$
 BEGIN
   PERFORM insert_soil_sample(
     soil_sample_id := NEW.soil_sample_id,
-    trial := NEW.trial,
-    site := NEW.site,
-    field := NEW.field,
+    trial := NEW.trial_name,
+    field := NEW.field_name,
     plot_number := NEW.plot_number,
     year := NEW.year,
     date := NEW.date,
@@ -157,9 +154,8 @@ RETURNS TRIGGER AS $$
 BEGIN
   PERFORM update_soil_sample(
     soil_sample_id_in := NEW.soil_sample_id,
-    trial_in := NEW.trial,
-    site_in := NEW.site,
-    field_in := NEW.field,
+    trial_in := NEW.trial_name,
+    field_in := NEW.field_name,
     plot_number_in := NEW.plot_number,
     year_in := NEW.year,
     date_in := NEW.date,

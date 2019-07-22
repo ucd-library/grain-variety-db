@@ -16,10 +16,10 @@ CREATE INDEX crop_sample_crop_part_measurement_id_idx ON crop_sample(crop_part_m
 CREATE OR REPLACE VIEW crop_sample_view AS
   SELECT
     c.crop_sample_id AS crop_sample_id,
-    cse.trial as trial,
-    cse.site as site,
+    cse.trial_name as trial_name,
+    cse.site_name as site_name,
     cse.season as season,
-    cse.field as field,
+    cse.field_name as field_name,
     cse.plot_number as plot_number,
     cse.crop as crop,
     cpm.plant_part as plant_part,
@@ -87,7 +87,7 @@ CREATE OR REPLACE FUNCTION update_crop_sample (
   crop_sample_id_in UUID,
   trial_in TEXT,
   field_in TEXT,
-  plot_number_in TEXT,
+  plot_number_in INTEGER,
   crop_in TEXT,
   plant_part_in TEXT,
   year_in INTEGER,
@@ -127,8 +127,8 @@ RETURNS TRIGGER AS $$
 BEGIN
   PERFORM insert_crop_sample(
     crop_sample_id := NEW.crop_sample_id,
-    trial := NEW.trial,
-    field := NEW.field,
+    trial := NEW.trial_name,
+    field := NEW.field_name,
     plot_number := NEW.plot_number,
     crop := NEW.crop,
     plant_part := NEW.plant_part,
@@ -154,8 +154,8 @@ RETURNS TRIGGER AS $$
 BEGIN
   PERFORM update_crop_sample(
     crop_sample_id_in := NEW.crop_sample_id,
-    trial_in := NEW.trial,
-    field_in := NEW.field,
+    trial_in := NEW.trial_name,
+    field_in := NEW.field_name,
     plot_number_in := NEW.plot_number,
     crop_in := NEW.crop,
     plant_part_in := NEW.plant_part,
@@ -166,7 +166,7 @@ BEGIN
     measurement_device_in := NEW.measurement_device,
     measurement_unit_in := NEW.measurement_unit,
     amount_in := NEW.amount,
-    description := NEW.description
+    description_in := NEW.description
   );
   RETURN NEW;
 

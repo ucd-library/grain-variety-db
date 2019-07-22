@@ -16,9 +16,9 @@ CREATE INDEX note_source_id_idx ON note(source_id);
 CREATE OR REPLACE VIEW note_view AS
   SELECT
     n.note_id AS note_id,
-    t.name as trial,
-    l.site as site,
-    l.field as field,
+    t.name as trial_name,
+    l.site_name as site_name,
+    l.field_name as field_name,
     l.plot_number as plot_number,
     n.growth_stage as growth_stage,
     n.date as date,
@@ -111,8 +111,8 @@ RETURNS TRIGGER AS $$
 BEGIN
   PERFORM insert_note(
     note_id := NEW.note_id,
-    trial := NEW.trial,
-    field := NEW.field,
+    trial := NEW.trial_name,
+    field := NEW.field_name,
     plot_number := NEW.plot_number,
     growth_stage := NEW.growth_stage,
     date := NEW.date,
@@ -132,8 +132,8 @@ RETURNS TRIGGER AS $$
 BEGIN
   PERFORM update_note(
     note_id_in := NEW.note_id,
-    trial_in := NEW.trial,
-    field_in := NEW.field,
+    trial_in := NEW.trial_name,
+    field_in := NEW.field_name,
     plot_number_in := NEW.plot_number,
     growth_stage_in := NEW.growth_stage,
     date_in := NEW.date,

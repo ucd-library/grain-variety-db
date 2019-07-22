@@ -14,19 +14,21 @@ CREATE INDEX location_field_id_idx ON location(field_id);
 CREATE OR REPLACE VIEW location_view AS
   SELECT
     l.location_id AS location_id,
-    t.name as trial,
-    s.name as site,
+    t.name as trial_name,
+    s.name as site_name,
     s.season as season,
-    f.name as field,
+    f.name as field_name,
     p.plot_number as plot_number,
-    cr.name as crop
+    cr.name as crop,
+    sc.name as source_name
   FROM
     location l
 LEFT JOIN field f on l.field_id = f.field_id
 LEFT JOIN plot p on l.plot_id = p.plot_id
 LEFT JOIN site s on f.site_id = s.site_id
 LEFT JOIN trial t on f.trial_id = t.trial_id
-LEFT JOIN crop cr on f.crop_id = cr.crop_id;
+LEFT JOIN crop cr on f.crop_id = cr.crop_id
+LEFT JOIN source sc on f.source_id = sc.source_id;
 
 -- FUNCTION INSERT
 CREATE OR REPLACE FUNCTION insert_location (

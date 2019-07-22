@@ -16,10 +16,10 @@ CREATE INDEX crop_sampling_event_location_id_idx ON crop_sampling_event(location
 CREATE OR REPLACE VIEW crop_sampling_event_view AS
   SELECT
     c.crop_sampling_event_id AS crop_sampling_event_id,
-    l.trial as trial,
-    l.site as site,
+    l.trial_name as trial_name,
+    l.site_name as site_name,
     l.season as season,
-    l.field as field,
+    l.field_name as field_name,
     l.plot_number as plot_number,
     l.crop as crop,
     c.year as year,
@@ -101,8 +101,8 @@ RETURNS TRIGGER AS $$
 BEGIN
   PERFORM insert_crop_sampling_event(
     crop_sampling_event_id := NEW.crop_sampling_event_id,
-    trial := NEW.trial,
-    field := NEW.field,
+    trial := NEW.trial_name,
+    field := NEW.field_name,
     plot_number := NEW.plot_number,
     year := NEW.year,
     date := NEW.date,
@@ -121,8 +121,8 @@ RETURNS TRIGGER AS $$
 BEGIN
   PERFORM update_crop_sampling_event(
     crop_sampling_event_id_in := NEW.crop_sampling_event_id,
-    trial_in := NEW.trial,
-    field_in := NEW.field,
+    trial_in := NEW.trial_name,
+    field_in := NEW.field_name,
     plot_number_in := NEW.plot_number,
     year_in := NEW.year,
     date_in := NEW.date,

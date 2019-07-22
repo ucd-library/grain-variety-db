@@ -23,7 +23,7 @@ SELECT
   f.field_id as field_id,
   t.name as trial_name,
   s.name as site_name,
-  f.name as name,
+  f.name as field_name,
   f.water_stress as water_stress,
   f.nitrogen_stress as nitrogen_stress,
   f.bedded as bedded,
