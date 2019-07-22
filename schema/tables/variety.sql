@@ -15,7 +15,7 @@ CREATE OR REPLACE VIEW variety_view AS
   SELECT
     v.variety_id as variety_id,
     c.name as crop,
-    v.name as name,
+    v.name as variety_name,
     v.crop_classification as crop_classification,
     v.source as source,
     v.release_status as release_status,
@@ -88,7 +88,7 @@ BEGIN
   PERFORM insert_variety(
     variety_id := NEW.variety_id,
     crop := NEW.crop,
-    name := NEW.name,
+    name := NEW.variety_name,
     crop_classification := NEW.crop_classification,
     source := NEW.source,
     release_status := NEW.release_status,
@@ -107,7 +107,7 @@ BEGIN
   PERFORM update_variety(
     variety_id_in := NEW.variety_id,
     crop_in := NEW.crop,
-    name_in := NEW.name,
+    name_in := NEW.variety_name,
     crop_classification_in := NEW.crop_classification,
     source_in := NEW.source,
     release_status_in := NEW.release_status
