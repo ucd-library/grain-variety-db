@@ -78,7 +78,7 @@ BEGIN
   SELECT get_variety_id(variety_name_in) INTO vid;
 
   UPDATE regional_variety SET (
-    region, variety_name, uc_entry_number, trial_group, crop_classification, crop_sub_type,  year_added
+    region, variety_id, uc_entry_number, trial_group, crop_classification, crop_sub_type,  year_added
   ) = (
     region_in, vid, uc_entry_number_in, trial_group_in, crop_classification_in, crop_sub_type_in, year_added_in
   ) WHERE
