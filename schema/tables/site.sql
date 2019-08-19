@@ -129,7 +129,7 @@ BEGIN
   PERFORM insert_site_kml(
     site_id := NEW.site_id,
     source_name := NEW.source_name,
-    name := NEW.name,
+    name := NEW.site_name,
     common_name := NEW.common_name,
     region := NEW.region,
     description := NEW.description,
@@ -151,7 +151,7 @@ RETURNS TRIGGER AS $$
 BEGIN
   PERFORM update_site_kml(
     site_id_in := NEW.site_id,
-    name_in := NEW.name,
+    name_in := NEW.site_name,
     common_name_in := NEW.common_name,
     region_in := NEW.region,
     description_in := NEW.description,

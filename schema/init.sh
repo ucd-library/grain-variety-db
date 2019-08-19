@@ -1,7 +1,6 @@
 #! /bin/bash
 
 export PGSERVICE=graindev
-#export PGSERVICE=grain
 
 SCHEMA=grain;
 psql -c "CREATE SCHEMA IF NOT EXISTS $SCHEMA;"
@@ -67,10 +66,10 @@ psql -c "grant all on all tables in schema $SCHEMA to public;"
 psql -c "grant execute on all functions in schema $SCHEMA to public;"
 psql -c "GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA $SCHEMA TO public;"
 
-grant usage on schema grain to public;
-grant all on all tables in schema grain to public;
-grant execute on all functions in schema grain to public;
-GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA grain TO public;
+# grant usage on schema grain to public;
+# grant all on all tables in schema grain to public;
+# grant execute on all functions in schema grain to public;
+# GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA grain TO public;
 
 # insert_view () {
 #   v=$(basename $1);

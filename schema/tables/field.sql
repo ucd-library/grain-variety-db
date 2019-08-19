@@ -152,9 +152,11 @@ BEGIN
   IF( source_name_in IS NOT NULL ) THEN
     SELECT get_source_id(source_name_in) into scid;
     DELETE FROM location WHERE source_id = scid;
+    DELETE FROM field WHERE source_id = scid;
   END IF;
 
   IF( field_id_in IS NOT NULL ) THEN
+    DELETE FROM location WHERE field_id = field_id_in and plot_id is null;
     DELETE FROM field where field_id = field_id_in;
   END IF;
 
@@ -171,7 +173,7 @@ BEGIN
     field_id := NEW.field_id,
     trial_name := NEW.trial_name,
     site_name := NEW.site_name,
-    name := NEW.name,
+    name := NEW.field_name,
     water_stress := NEW.water_stress,
     nitrogen_stress := NEW.nitrogen_stress,
     bedded := NEW.bedded,
@@ -196,7 +198,7 @@ BEGIN
     field_id_in := NEW.field_id,
     trial_name_in := NEW.trial_name,
     site_name_in := NEW.site_name,
-    name_in := NEW.name,
+    name_in := NEW.field_name,
     water_stress_in := NEW.water_stress,
     nitrogen_stress_in := NEW.nitrogen_stress,
     bedded_in := NEW.bedded,
