@@ -53,8 +53,8 @@ CREATE OR REPLACE FUNCTION insert_soil_sample (
   measurement_device TEXT,
   measurement_unit TEXT,
   amount FLOAT,
-  start_depth INTEGER,
-  end_depth INTEGER,
+  start_depth FLOAT,
+  end_depth FLOAT,
   description TEXT,
   source_name TEXT) RETURNS void AS $$   
 DECLARE
@@ -72,7 +72,7 @@ BEGIN
   END IF;
   SELECT get_source_id(source_name) INTO source_id;
   SELECT get_location_id(trial, field, plot_number) INTO lid;
-  SELECT get_soil_sampling_event_id(trial, field, plot_number_in, year, growth_stage_in) into sseid;
+  SELECT get_soil_sampling_event_id(trial, field, plot_number, year, growth_stage) into sseid;
   SELECT get_measurement_id(measurement_name, measurement_device, measurement_unit) into mid;
 
   INSERT INTO soil_sample (
@@ -98,8 +98,8 @@ CREATE OR REPLACE FUNCTION update_soil_sample (
   measurement_device_in TEXT,
   measurement_unit_in TEXT,
   amount_in FLOAT,
-  start_depth_in INTEGER,
-  end_depth_in INTEGER,
+  start_depth_in FLOAT,
+  end_depth_in FLOAT,
   description_in TEXT) RETURNS void AS $$   
 DECLARE
   sseid UUID;

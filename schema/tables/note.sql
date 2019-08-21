@@ -89,7 +89,7 @@ BEGIN
     select extract(YEAR FROM date_in) into year_in;
   END IF;
   SELECT get_trial_id(trial_in) INTO tid;
-  IF field IS NOT NULL THEN
+  IF field_in IS NOT NULL THEN
     SELECT get_location_id(trial_in, field_in, plot_number_in) INTO lid;
   END IF;
 
