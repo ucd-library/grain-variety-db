@@ -10,7 +10,8 @@ CREATE TABLE plot (
   plot_number INTEGER NOT NULL,
   boundary GEOMETRY(POLYGON, 4326),
   description text,
-  variety_id UUID REFERENCES variety NOT NULL
+  variety_id UUID REFERENCES variety NOT NULL,
+  UNIQUE(field_id, plot_number)
 );
 CREATE INDEX plot_source_id_idx ON plot(source_id);
 CREATE INDEX plot_field_id_idx ON plot(field_id);

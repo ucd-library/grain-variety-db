@@ -9,7 +9,8 @@ CREATE TABLE regional_variety (
   trial_group trial_group,
   crop_sub_type crop_sub_type,
   year_added INTEGER,
-  crop_classification crop_classification
+  crop_classification crop_classification,
+  UNIQUE(region, uc_entry_number)
 );
 
 -- VIEW

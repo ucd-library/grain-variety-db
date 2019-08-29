@@ -4,7 +4,8 @@ CREATE TABLE variety_parentage (
   variety_parentage_id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   source_id UUID REFERENCES source NOT NULL,
   variety_id UUID REFERENCES variety NOT NULL,
-  parent_variety_id UUID REFERENCES variety NOT NULL
+  parent_variety_id UUID REFERENCES variety NOT NULL,
+  UNIQUE(variety_id, parent_variety_id)
 );
 CREATE INDEX variety_parentage_source_id_idx ON variety_parentage(source_id);
 

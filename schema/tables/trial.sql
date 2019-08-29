@@ -3,7 +3,7 @@ DROP TABLE IF EXISTS trial CASCADE;
 CREATE TABLE trial (
   trial_id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   source_id UUID REFERENCES source NOT NULL,
-  name text NOT NULL,
+  name text NOT NULL UNIQUE,
   description text
 );
 

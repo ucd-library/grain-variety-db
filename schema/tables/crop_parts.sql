@@ -4,7 +4,8 @@ CREATE TABLE crop_parts (
   crop_parts_id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   source_id UUID REFERENCES source NOT NULL,
   plant_part_id UUID REFERENCES plant_part NOT NULL,
-  crop_id UUID REFERENCES crop NOT NULL
+  crop_id UUID REFERENCES crop NOT NULL,
+  UNIQUE(plant_part_id, crop_id)
 );
 CREATE INDEX crop_parts_plant_part_id_idx ON crop_parts(plant_part_id);
 CREATE INDEX crop_parts_plant_crop_id_idx ON crop_parts(crop_id);

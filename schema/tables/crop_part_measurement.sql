@@ -4,7 +4,8 @@ CREATE TABLE crop_part_measurement (
   crop_part_measurement_id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   source_id UUID REFERENCES source NOT NULL,
   measurement_id UUID REFERENCES measurement NOT NULL,
-  crop_parts_id UUID REFERENCES crop_parts NOT NULL
+  crop_parts_id UUID REFERENCES crop_parts NOT NULL,
+  UNIQUE(measurement_id, crop_parts_id)
 );
 CREATE INDEX crop_part_measurement_source_id_idx ON crop_part_measurement(source_id);
 CREATE INDEX crop_part_measurement_measurement_id_idx ON crop_part_measurement(measurement_id);

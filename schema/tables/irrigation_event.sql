@@ -9,7 +9,8 @@ CREATE TABLE irrigation_event (
   year INTEGER NOT NULL,
   irrigation_method_id UUID REFERENCES irrigation_method NOT NULL,
   amount FLOAT NOT NULL,
-  description TEXT
+  description TEXT,
+  UNIQUE(location_id, year, growth_stage)
 );
 CREATE INDEX irrigation_event_source_id_idx ON irrigation_event(source_id);
 
