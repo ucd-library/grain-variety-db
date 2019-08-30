@@ -69,7 +69,7 @@ BEGIN
   INSERT INTO fertilization_event (
     fertilization_event_id, location_id, growth_stage, year, date, fertilization_type_id, amount, description, source_id
   ) VALUES (
-    fertilization_event_id, lid, year, growth_stage, date, ftid, amount, description, source_id
+    fertilization_event_id, lid, growth_stage, year, date, ftid, amount, description, source_id
   );
 
 EXCEPTION WHEN raise_exception THEN

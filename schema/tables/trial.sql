@@ -36,9 +36,9 @@ BEGIN
   select get_source_id(source_name) into source_id;
 
   INSERT INTO trial (
-    source_id, name, description
+    trial_id, name, description, source_id
   ) VALUES (
-    source_id, name, description
+    trial_id, name, description, source_id
   );
 
 EXCEPTION WHEN raise_exception THEN

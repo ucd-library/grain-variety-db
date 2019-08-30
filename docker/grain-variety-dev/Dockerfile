@@ -8,5 +8,5 @@ RUN apt-get update \
         postgresql-10-postgis-scripts \
       && rm -rf /var/lib/apt/lists/*
 
-# RUN mkdir -p /docker-entrypoint-initdb.d
-# COPY ./initdb-postgis.sh /docker-entrypoint-initdb.d/postgis.sh
+RUN mkdir -p /docker-entrypoint-initdb.d
+COPY ./initdb-postgis.sql /docker-entrypoint-initdb.d/postgis.sql
