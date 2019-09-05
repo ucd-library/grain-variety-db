@@ -4,7 +4,8 @@ CREATE TABLE irrigation_event (
   irrigation_event_id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   source_id UUID REFERENCES source NOT NULL,
   location_id UUID REFERENCES location NOT NULL,
-  growth_stage INTEGER,
+  growth_stage_min INTEGER,
+  growth_stage_max INTEGER,
   date DATE,
   year INTEGER NOT NULL,
   irrigation_method_id UUID REFERENCES irrigation_method NOT NULL,
@@ -22,7 +23,8 @@ CREATE OR REPLACE VIEW irrigation_event_view AS
     l.site_name as site_name,
     l.field_name as field_name,
     l.plot_number as plot_number,
-    i.growth_stage as growth_stage,
+    i.growth_stage_min as growth_stage_min,
+    i.growth_stage_max as growth_stage_max,
     i.year as year,
     i.date as date,
     im.name as irrigation_name,
@@ -42,7 +44,8 @@ CREATE OR REPLACE FUNCTION insert_irrigation_event (
   trial TEXT,
   field TEXT,
   plot_number INTEGER,
-  growth_stage INTEGER,
+  growth_stage_min INTEGER,
+  growth_stage_max INTEGER,
   year INTEGER,
   date DATE,
   irrigation_name TEXT,
@@ -66,9 +69,9 @@ BEGIN
   SELECT get_fertilization_method_id(irrigation_name, irrigation_unit) INTO imid;
 
   INSERT INTO irrigation_event (
-    irrigation_event_id, location_id, growth_stage, year, date, irrigation_method_id, amount, description, source_id
+    irrigation_event_id, location_id, growth_stage_min, growth_stage_max, year, date, irrigation_method_id, amount, description, source_id
   ) VALUES (
-    irrigation_event_id, lid, growth_stage, year, date, imid, amount, description, source_id
+    irrigation_event_id, lid, growth_stage_min, growth_stage_max, year, date, imid, amount, description, source_id
   );
 
 EXCEPTION WHEN raise_exception THEN
@@ -81,7 +84,8 @@ CREATE OR REPLACE FUNCTION update_irrigation_event (
   trial_in TEXT,
   field_in TEXT,
   plot_number_in INTEGER,
-  growth_stage_in INTEGER,
+  growth_stage_min_in INTEGER,
+  growth_stage_max_in INTEGER,
   year_in INTEGER,
   date_in DATE,
   irrigation_name_in TEXT,
@@ -99,9 +103,9 @@ BEGIN
   SELECT get_fertilization_method_id(irrigation_name, irrigation_unit) INTO imid;
 
   UPDATE irrigation_event SET (
-    location_id, growth_stage, year, date, irrigation_method_id, amount, description
+    location_id, growth_stage_min, growth_stage_max, year, date, irrigation_method_id, amount, description
   ) = (
-    lid, growth_stage_in, year_in, date_in, imid, amount_in, description_in
+    lid, growth_stage_min_in, growth_stage_max_in, year_in, date_in, imid, amount_in, description_in
   ) WHERE
     irrigation_event_id = irrigation_event_id_in;
 
@@ -119,7 +123,8 @@ BEGIN
     trial := NEW.trial_name,
     field := NEW.field_name,
     plot_number := NEW.plot_number,
-    growth_stage := NEW.growth_stage,
+    growth_stage_min := NEW.growth_stage_min,
+    growth_stage_max := NEW.growth_stage_max,
     year := NEW.year,
     date := NEW.date,
     irrigation_name := NEW.irrigation_name,
@@ -143,7 +148,8 @@ BEGIN
     trial_in := NEW.trial_name,
     field_in := NEW.field_name,
     plot_number_in := NEW.plot_number,
-    growth_stage_in := NEW.growth_stage,
+    growth_stage_min_in := NEW.growth_stage_min,
+    growth_stage_max_in := NEW.growth_stage_max,
     year_in := NEW.year,
     date_in := NEW.date,
     irrigation_name_in := NEW.irrigation_name,

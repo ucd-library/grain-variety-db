@@ -5,9 +5,10 @@ CREATE TABLE note (
   source_id UUID REFERENCES source NOT NULL,
   trial_id UUID REFERENCES trial NOT NULL,
   location_id UUID REFERENCES location,
-  growth_stage INTEGER,
   date DATE,
   year INTEGER,
+  growth_stage_min INTEGER,
+  growth_stage_max INTEGER,
   note TEXT NOT NULL
 );
 CREATE INDEX note_source_id_idx ON note(source_id);
@@ -20,10 +21,11 @@ CREATE OR REPLACE VIEW note_view AS
     l.site_name as site_name,
     l.field_name as field_name,
     l.plot_number as plot_number,
-    n.growth_stage as growth_stage,
     n.date as date,
     n.year as year,
     n.note as note,
+    n.growth_stage_min as growth_stage_min,
+    n.growth_stage_max as growth_stage_max,
     sc.name AS source_name
   FROM
     note n
@@ -37,7 +39,8 @@ CREATE OR REPLACE FUNCTION insert_note (
   trial TEXT,
   field TEXT,
   plot_number INTEGER,
-  growth_stage INTEGER,
+  growth_stage_min INTEGER,
+  growth_stage_max INTEGER,
   date DATE,
   year INTEGER,
   note TEXT,
@@ -61,9 +64,9 @@ BEGIN
   SELECT get_source_id(source_name) INTO source_id;
 
   INSERT INTO note (
-    note_id, trial_id, location_id, growth_stage, date, year, note, source_id
+    note_id, trial_id, location_id, growth_stage_min, growth_stage_max, date, year, note, source_id
   ) VALUES (
-    note_id, tid, lid, growth_stage, date, year, note, source_id
+    note_id, tid, lid, growth_stage_min, growth_stage_max, date, year, note, source_id
   );
 
 EXCEPTION WHEN raise_exception THEN
@@ -76,7 +79,8 @@ CREATE OR REPLACE FUNCTION update_note (
   trial_in TEXT,
   field_in TEXT,
   plot_number_in INTEGER,
-  growth_stage_in INTEGER,
+  growth_stage_min_in INTEGER,
+  growth_stage_max_in INTEGER,
   date_in DATE,
   year_in INTEGER,
   note_in TEXT) RETURNS void AS $$   
@@ -94,9 +98,9 @@ BEGIN
   END IF;
 
   UPDATE note SET (
-    trial_id, location_id, growth_stage, date, year, note
+    trial_id, location_id, growth_stage_min, growth_stage_max, date, year, note
   ) = (
-    tid, lid, growth_stage_in, date_in, year_in, note_in
+    tid, lid, growth_stage_min_in, growth_stage_max_in, date_in, year_in, note_in
   ) WHERE
     note_id = note_id_in;
 
@@ -114,7 +118,8 @@ BEGIN
     trial := NEW.trial_name,
     field := NEW.field_name,
     plot_number := NEW.plot_number,
-    growth_stage := NEW.growth_stage,
+    growth_stage_min := NEW.growth_stage_min,
+    growth_stage_max := NEW.growth_stage_max,
     date := NEW.date,
     year := NEW.year,
     note := NEW.note,
@@ -135,7 +140,8 @@ BEGIN
     trial_in := NEW.trial_name,
     field_in := NEW.field_name,
     plot_number_in := NEW.plot_number,
-    growth_stage_in := NEW.growth_stage,
+    growth_stage_min_in := NEW.growth_stage_min,
+    growth_stage_max_in := NEW.growth_stage_max,
     date_in := NEW.date,
     year_in := NEW.year,
     note_in := NEW.note

@@ -3,8 +3,12 @@ DROP TABLE IF EXISTS crop_sample CASCADE;
 CREATE TABLE crop_sample (
   crop_sample_id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   source_id UUID REFERENCES source NOT NULL,
-  crop_sampling_event_id UUID REFERENCES crop_sampling_event NOT NULL,
   crop_part_measurement_id UUID REFERENCES crop_part_measurement NOT NULL,
+  location_id UUID REFERENCES location,
+  date DATE,
+  year INTEGER,
+  growth_stage_min INTEGER,
+  growth_stage_max INTEGER,
   amount float NOT NULL,
   description text
 );
@@ -16,16 +20,17 @@ CREATE INDEX crop_sample_crop_part_measurement_id_idx ON crop_sample(crop_part_m
 CREATE OR REPLACE VIEW crop_sample_view AS
   SELECT
     c.crop_sample_id AS crop_sample_id,
-    cse.trial_name as trial_name,
-    cse.site_name as site_name,
-    cse.season as season,
-    cse.field_name as field_name,
-    cse.plot_number as plot_number,
-    cse.crop as crop,
+    t.name as trial_name,
+    l.site_name as site_name,
+    l.season as season,
+    l.field_name as field_name,
+    l.plot_number as plot_number,
+    cpm.crop as crop,
     cpm.plant_part as plant_part,
-    cse.year as year,
-    cse.date as date,
-    cse.growth_stage as growth_stage,
+    c.year as year,
+    c.date as date,
+    c.growth_stage_min as growth_stage_min,
+    c.growth_stage_max as growth_stage_max,
     cpm.measurement_name as measurement_name,
     cpm.measurement_device as measurement_device,
     cpm.measurement_unit as measurement_unit,
@@ -35,7 +40,8 @@ CREATE OR REPLACE VIEW crop_sample_view AS
   FROM
     crop_sample c
 LEFT JOIN source sc ON c.source_id = sc.source_id
-LEFT JOIN crop_sampling_event_view cse on c.crop_sampling_event_id = cse.crop_sampling_event_id
+LEFT JOIN trial t ON n.trial_id = t.trial_id
+LEFT JOIN location_view l ON n.location_id = l.location_id
 LEFT JOIN crop_part_measurement_view cpm on c.crop_part_measurement_id = cpm.crop_part_measurement_id;
 
 -- FUNCTIONS
@@ -48,7 +54,8 @@ CREATE OR REPLACE FUNCTION insert_crop_sample (
   plant_part TEXT,
   year INTEGER,
   date DATE,
-  growth_stage INTEGER,
+  growth_stage_min INTEGER,
+  growth_stage_max INTEGER,
   measurement_name TEXT,
   measurement_device TEXT,
   measurement_unit TEXT,
@@ -58,7 +65,7 @@ CREATE OR REPLACE FUNCTION insert_crop_sample (
 DECLARE
   cid UUID;
   source_id UUID;
-  cseid UUID;
+  lid UUID;
   cpmid UUID;
 BEGIN
 
@@ -69,13 +76,15 @@ BEGIN
     select extract(YEAR FROM date) into year;
   END IF;
   SELECT get_source_id(source_name) INTO source_id;
-  SELECT get_crop_sampling_event_id(trial, field, plot_number, year, growth_stage) into cseid;
+  SELECT get_location_id(trial, field, plot_number) INTO lid;
   SELECT get_crop_part_measurement_id(crop, plant_part, measurement_name, measurement_device, measurement_unit) into cpmid;
 
   INSERT INTO crop_sample (
-    crop_sample_id, crop_sampling_event_id, crop_part_measurement_id, amount, description, source_id
+    crop_sample_id, location_id, crop_part_measurement_id, year, date, growth_stage_min, growth_stage_max,
+    amount, description, source_id
   ) VALUES (
-    crop_sample_id, cseid, cpmid, amount, description, source_id
+    crop_sample_id, lid, cpmid, year, date, growth_stage_min, growth_stage_max,
+    amount, description, source_id
   );
 
 EXCEPTION WHEN raise_exception THEN
@@ -92,27 +101,30 @@ CREATE OR REPLACE FUNCTION update_crop_sample (
   plant_part_in TEXT,
   year_in INTEGER,
   date_in DATE,
-  growth_stage_in INTEGER,
+  growth_stage_min_in INTEGER,
+  growth_stage_max_in INTEGER,
   measurement_name_in TEXT,
   measurement_device_in TEXT,
   measurement_unit_in TEXT,
   amount_in FLOAT,
   description_in TEXT) RETURNS void AS $$   
 DECLARE
-  cseid UUID;
+  lid UUID;
   cpmid UUID;
 BEGIN
 
   IF date_in IS NOT NULL THEN
     select extract(YEAR FROM date_in) into year_in;
   END IF;
-  SELECT get_crop_sampling_event_id(trial_in, field_in, plot_number_in, year_in, growth_stage_in) into cseid;
+  SELECT get_location_id(trial_in, field_in, plot_number_in) INTO lid;
   SELECT get_crop_part_measurement_id(crop_in, plant_part_in, measurement_name_in, measurement_device_in, measurement_unit_in) into cpmid;
 
   UPDATE crop_sample SET (
-    crop_sampling_event_id, crop_part_measurement_id, amount, description
+    location_id, crop_part_measurement_id, year, date, growth_stage_min, growth_stage_max,
+    amount, description
   ) = (
-    cseid, cpmid, amount_in, description_in
+    lid, cpmid, year_in, date_in, growth_stage_min_in, growth_stage_max_in,
+    amount_in, description_in
   ) WHERE
     crop_sample_id = crop_sample_id_in;
 
@@ -134,7 +146,8 @@ BEGIN
     plant_part := NEW.plant_part,
     year := NEW.year,
     date := NEW.date,
-    growth_stage := NEW.growth_stage,
+    growth_stage_min := NEW.growth_stage_min,
+    growth_stage_max := NEW.growth_stage_max,
     measurement_name := NEW.measurement_name,
     measurement_device := NEW.measurement_device,
     measurement_unit := NEW.measurement_unit,
@@ -161,7 +174,8 @@ BEGIN
     plant_part_in := NEW.plant_part,
     year_in := NEW.year,
     date_in := NEW.date,
-    growth_stage_in := NEW.growth_stage,
+    growth_stage_min_in := NEW.growth_stage_min,
+    growth_stage_max_in := NEW.growth_stage_max,
     measurement_name_in := NEW.measurement_name,
     measurement_device_in := NEW.measurement_device,
     measurement_unit_in := NEW.measurement_unit,

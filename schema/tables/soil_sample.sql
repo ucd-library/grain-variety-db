@@ -3,9 +3,13 @@ DROP TABLE IF EXISTS soil_sample CASCADE;
 CREATE TABLE soil_sample (
   soil_sample_id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   source_id UUID REFERENCES source NOT NULL,
-  soil_sampling_event_id UUID REFERENCES soil_sampling_event NOT NULL,
   measurement_id UUID REFERENCES measurement NOT NULL,
   amount float NOT NULL,
+  location_id UUID REFERENCES location,
+  date DATE,
+  year INTEGER,
+  growth_stage_min INTEGER,
+  growth_stage_max INTEGER,
   start_depth float NOT NULL,
   end_depth float NOT NULL,
   description text
@@ -18,13 +22,14 @@ CREATE INDEX soil_sample_measurement_id_idx ON soil_sample(measurement_id);
 CREATE OR REPLACE VIEW soil_sample_view AS
   SELECT
     s.soil_sample_id AS soil_sample_id,
-    sse.trial_name as trial_name,
-    sse.site_name as site_name,
-    sse.field_name as field_name,
-    sse.plot_number as plot_number,
-    sse.year as year,
-    sse.date as date,
-    sse.growth_stage as growth_stage,
+    t.name as trial_name,
+    l.site_name as site_name,
+    l.field_name as field_name,
+    l.plot_number as plot_number,
+    s.year as year,
+    s.date as date,
+    s.growth_stage_min as growth_stage_min,
+    s.growth_stage_max as growth_stage_max,
     m.name as measurement_name,
     m.device as measurement_device,
     m.unit as measurement_unit,
@@ -36,7 +41,8 @@ CREATE OR REPLACE VIEW soil_sample_view AS
   FROM
     soil_sample s
 LEFT JOIN source sc ON s.source_id = sc.source_id
-LEFT JOIN soil_sampling_event_view sse on s.soil_sampling_event_id = sse.soil_sampling_event_id
+LEFT JOIN trial t ON n.trial_id = t.trial_id
+LEFT JOIN location_view l ON n.location_id = l.location_id
 LEFT JOIN measurement_view m on s.measurement_id = m.measurement_id;
 
 
@@ -48,7 +54,8 @@ CREATE OR REPLACE FUNCTION insert_soil_sample (
   plot_number INTEGER,
   year INTEGER,
   date DATE,
-  growth_stage INTEGER,
+  growth_stage_min INTEGER,
+  growth_stage_max INTEGER,
   measurement_name TEXT,
   measurement_device TEXT,
   measurement_unit TEXT,
@@ -59,7 +66,6 @@ CREATE OR REPLACE FUNCTION insert_soil_sample (
   source_name TEXT) RETURNS void AS $$   
 DECLARE
   source_id UUID;
-  sseid UUID;
   mid UUID;
   lid UUID;
 BEGIN
@@ -72,13 +78,14 @@ BEGIN
   END IF;
   SELECT get_source_id(source_name) INTO source_id;
   SELECT get_location_id(trial, field, plot_number) INTO lid;
-  SELECT get_soil_sampling_event_id(trial, field, plot_number, year, growth_stage) into sseid;
   SELECT get_measurement_id(measurement_name, measurement_device, measurement_unit) into mid;
 
   INSERT INTO soil_sample (
-    soil_sample_id, soil_sampling_event_id, measurement_id, amount, start_depth, end_depth, description, source_id
+    soil_sample_id, location_id, measurement_id, year, date, growth_stage_min, growth_stage_max,
+    amount, start_depth, end_depth, description, source_id
   ) VALUES (
-    soil_sample_id, sseid, mid, amount, start_depth, end_depth, description, source_id
+    soil_sample_id, lid, mid, year, date, growth_stage_min, growth_stage_max,
+    amount, start_depth, end_depth, description, source_id
   );
 
 EXCEPTION WHEN raise_exception THEN
@@ -93,7 +100,8 @@ CREATE OR REPLACE FUNCTION update_soil_sample (
   plot_number_in INTEGER,
   year_in INTEGER,
   date_in DATE,
-  growth_stage_in INTEGER,
+  growth_stage_min_in INTEGER,
+  growth_stage_max_in INTEGER,
   measurement_name_in TEXT,
   measurement_device_in TEXT,
   measurement_unit_in TEXT,
@@ -104,15 +112,18 @@ CREATE OR REPLACE FUNCTION update_soil_sample (
 DECLARE
   sseid UUID;
   mid UUID;
+  lid UUID;
 BEGIN
 
-  SELECT get_soil_sampling_event_id(trial_in, field_in, plot_number_in, year_in, growth_stage_in) into sseid;
+  SELECT get_location_id(trial_in, field_in, plot_number_in) INTO lid;
   SELECT get_measurement_id(measurement_name_in, measurement_device_in, measurement_unit_in) into mid;
 
   UPDATE soil_sample SET (
-    soil_sampling_event_id, measurement_id, amount, start_depth, end_depth, description
+    location_id, measurement_id, year, date, growth_stage_min, growth_stage_max,
+    amount, start_depth, end_depth, description
   ) = (
-    sseid, mid, amount_in, start_depth_in, end_depth_in, description_in
+    lid, mid, year_in, date_in, growth_stage_min_in, growth_stage_max_in,
+    amount_in, start_depth_in, end_depth_in, description_in
   ) WHERE
     soil_sample_id = soil_sample_id_in;
 
@@ -132,7 +143,8 @@ BEGIN
     plot_number := NEW.plot_number,
     year := NEW.year,
     date := NEW.date,
-    growth_stage := NEW.growth_stage,
+    growth_stage_min := NEW.growth_stage_min,
+    growth_stage_max := NEW.growth_stage_max,
     measurement_name := NEW.measurement_name,
     measurement_device := NEW.measurement_device,
     measurement_unit := NEW.measurement_unit,
@@ -159,7 +171,8 @@ BEGIN
     plot_number_in := NEW.plot_number,
     year_in := NEW.year,
     date_in := NEW.date,
-    growth_stage_in := NEW.growth_stage,
+    growth_stage_min_in := NEW.growth_stage_min,
+    growth_stage_max_in := NEW.growth_stage_max,
     measurement_name_in := NEW.measurement_name,
     measurement_device_in := NEW.measurement_device,
     measurement_unit_in := NEW.measurement_unit,
