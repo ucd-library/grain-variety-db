@@ -10,8 +10,7 @@ CREATE TABLE fertilization_event (
   year INTEGER NOT NULL,
   fertilization_type_id UUID REFERENCES fertilization_type NOT NULL,
   amount float NOT NULL,
-  description text,
-  UNIQUE(location_id, year, growth_stage)
+  description text
 );
 CREATE INDEX fertilization_event_source_id_idx ON fertilization_event(source_id);
 

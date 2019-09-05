@@ -22,11 +22,9 @@ INSERT INTO tables (table_view, name, uid) VALUES ('plant_part_view', 'plant_par
 INSERT INTO tables (table_view, name, uid) VALUES ('crop_part_measurement_view', 'crop_part_measurement', 'crop_part_measurement_id');
 INSERT INTO tables (table_view, name, uid) VALUES ('measurement_device_view', 'measurement_device', 'measurement_device_id');
 INSERT INTO tables (table_view, name, uid) VALUES ('measurement_view', 'measurement', 'measurement_id');
-INSERT INTO tables (table_view, name, uid) VALUES ('crop_sample_view', 'crop_sample', 'crop_sample_id');
-INSERT INTO tables (table_view, name, uid) VALUES ('crop_sampling_event_view', 'crop_sampling_event', 'crop_sampling_event_id');
 
+INSERT INTO tables (table_view, name, uid) VALUES ('crop_sample_view', 'crop_sample', 'crop_sample_id');
 INSERT INTO tables (table_view, name, uid) VALUES ('soil_sample_view', 'soil_sample', 'soil_sample_id');
-INSERT INTO tables (table_view, name, uid) VALUES ('soil_sampling_event_view', 'soil_sampling_event', 'soil_sampling_event_id');
 INSERT INTO tables (table_view, name, uid) VALUES ('weed_treatment_type_view', 'weed_treatment_type', 'weed_treatment_type_id');
 INSERT INTO tables (table_view, name, uid) VALUES ('weed_treatment_event_view', 'weed_treatment_event', 'weed_treatment_event_id');
 

@@ -1,9 +1,10 @@
 #! /bin/bash
 
-SCHEMA=grain;
+SCHEMA=grain_growth_stage;
 psql -c "CREATE SCHEMA IF NOT EXISTS $SCHEMA;"
-export PGOPTIONS=--search_path=$SCHEMA,public
 psql -c "CREATE EXTENSION IF NOT EXISTS \"uuid-ossp\";"
+# psql -c "alter extension \"uuid-ossp\" set schema public;"
+export PGOPTIONS=--search_path=$SCHEMA,public
 
 # types
 psql -f ./tables/enums/region.sql
@@ -13,9 +14,9 @@ psql -f ./tables/enums/crop_classification.sql
 psql -f ./tables/enums/crop_sub_type.sql
 
 # 3rd Party GIS DATA
-psql -c 'DROP TABLE IF EXISTS grain.ca_counties CASCADE';
-shp2pgsql ../data/CA_Counties/CA_Counties_TIGER2016.shp 'grain.ca_counties' | psql
-psql -c 'UPDATE grain.ca_counties set geom = ST_Transform(ST_SetSRID(geom, 3857),4326);';
+psql -c "DROP TABLE IF EXISTS $SCHEMA.ca_counties CASCADE";
+shp2pgsql ../data/CA_Counties/CA_Counties_TIGER2016.shp "$SCHEMA.ca_counties" | psql
+psql -c "UPDATE $SCHEMA.ca_counties set geom = ST_Transform(ST_SetSRID(geom, 3857),4326);";
 
 # tables
 psql -f ./tables/tables.sql
@@ -39,10 +40,7 @@ psql -f ./tables/measurement_device.sql;
 psql -f ./tables/measurement.sql;
 psql -f ./tables/crop_part_measurement.sql;
 
-psql -f ./tables/crop_sampling_event.sql;
 psql -f ./tables/crop_sample.sql;
-
-psql -f ./tables/soil_sampling_event.sql
 psql -f ./tables/soil_sample.sql
 
 psql -f ./tables/weed_treatment_type.sql

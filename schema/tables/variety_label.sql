@@ -23,7 +23,7 @@ LEFT JOIN source sc ON v.source_id = sc.source_id
 LEFT JOIN variety vy on v.variety_id = vy.variety_id;
 
 -- FUNCTIONS
-CREATE OR REPLACE FUNCTION grain.insert_variety_label (
+CREATE OR REPLACE FUNCTION insert_variety_label (
   variety_label_id UUID,
   variety_name TEXT,
   label TEXT,

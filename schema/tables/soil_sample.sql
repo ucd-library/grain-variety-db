@@ -15,14 +15,14 @@ CREATE TABLE soil_sample (
   description text
 );
 CREATE INDEX soil_sample_source_id_idx ON soil_sample(source_id);
-CREATE INDEX soil_sample_soil_sampling_event_id_idx ON soil_sample(soil_sampling_event_id);
+CREATE INDEX location_id_idx ON soil_sample(location_id);
 CREATE INDEX soil_sample_measurement_id_idx ON soil_sample(measurement_id);
 
 -- VIEW
 CREATE OR REPLACE VIEW soil_sample_view AS
   SELECT
     s.soil_sample_id AS soil_sample_id,
-    t.name as trial_name,
+    l.trial_name as trial_name,
     l.site_name as site_name,
     l.field_name as field_name,
     l.plot_number as plot_number,
@@ -41,8 +41,7 @@ CREATE OR REPLACE VIEW soil_sample_view AS
   FROM
     soil_sample s
 LEFT JOIN source sc ON s.source_id = sc.source_id
-LEFT JOIN trial t ON n.trial_id = t.trial_id
-LEFT JOIN location_view l ON n.location_id = l.location_id
+LEFT JOIN location_view l ON s.location_id = l.location_id
 LEFT JOIN measurement_view m on s.measurement_id = m.measurement_id;
 
 

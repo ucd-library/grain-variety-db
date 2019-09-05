@@ -15,7 +15,7 @@ CREATE TABLE field (
   previous_crop_id UUID REFERENCES CROP,
   previous_crop_description TEXT
 );
-CREATE INDEX location_source_id_idx ON location(source_id);
+CREATE INDEX field_source_id_idx ON location(source_id);
 
 -- VIEW
 CREATE OR REPLACE VIEW field_view AS 

@@ -13,14 +13,14 @@ CREATE TABLE crop_sample (
   description text
 );
 CREATE INDEX crop_sample_source_id_idx ON crop_sample(source_id);
-CREATE INDEX crop_sample_crop_sampling_event_id_idx ON crop_sample(crop_sampling_event_id);
+CREATE INDEX location_id_idx ON crop_sample(location_id);
 CREATE INDEX crop_sample_crop_part_measurement_id_idx ON crop_sample(crop_part_measurement_id);
 
 -- VIEW
 CREATE OR REPLACE VIEW crop_sample_view AS
   SELECT
     c.crop_sample_id AS crop_sample_id,
-    t.name as trial_name,
+    l.trial_name as trial_name,
     l.site_name as site_name,
     l.season as season,
     l.field_name as field_name,
@@ -40,8 +40,7 @@ CREATE OR REPLACE VIEW crop_sample_view AS
   FROM
     crop_sample c
 LEFT JOIN source sc ON c.source_id = sc.source_id
-LEFT JOIN trial t ON n.trial_id = t.trial_id
-LEFT JOIN location_view l ON n.location_id = l.location_id
+LEFT JOIN location_view l ON c.location_id = l.location_id
 LEFT JOIN crop_part_measurement_view cpm on c.crop_part_measurement_id = cpm.crop_part_measurement_id;
 
 -- FUNCTIONS
