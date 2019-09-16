@@ -108,12 +108,16 @@ DECLARE
 
 BEGIN
 
+  if( boundary_in is not NULL ) then
+    select ST_Force2D(ST_GeomFromKML(boundary_in)) into boundary_in;
+  END IF;
+
   UPDATE site SET (
     name, common_name, region, description, cooperator, season, season_start_year,
     season_end_year, boundary
   ) = (
     name_in, common_name_in, region_in, description_in, cooperator_in, season_in, 
-    season_start_year_in, season_end_year_in, ST_Force2D(ST_GeomFromKML(boundary))
+    season_start_year_in, season_end_year_in, boundary_in
   ) WHERE
     site_id = site_id_in;
 
