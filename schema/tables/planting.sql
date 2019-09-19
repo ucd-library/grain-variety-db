@@ -7,7 +7,7 @@ CREATE TABLE planting (
   date DATE,
   year INTEGER NOT NULL,
   planter TEXT NOT NULL,
-  seed_rate TEXT NOT NULL,
+  seed_rate INTEGER NOT NULL,
   description TEXT
 );
 CREATE INDEX planting_source_id_idx ON planting(source_id);
