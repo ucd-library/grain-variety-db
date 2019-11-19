@@ -115,22 +115,13 @@ END;
 $$ LANGUAGE plpgsql;
 
 CREATE OR REPLACE FUNCTION delete_plots (
-  plot_id_in UUID,
-  source_name_in text) RETURNS void AS $$   
+  plot_id_in UUID) RETURNS void AS $$   
 DECLARE
   scid UUID;
 BEGIN
 
-  IF( source_name_in IS NOT NULL ) THEN
-    SELECT get_source_id(source_name_in) into scid;
-    DELETE FROM location WHERE source_id = scid;
-    DELETE FROM plot WHERE source_id = scid;
-  END IF;
-
-  IF( plot_id_in IS NOT NULL ) THEN
-    DELETE FROM location where plot_id = plot_id_in;
-    DELETE FROM plot where plot_id = plot_id_in;
-  END IF;
+  DELETE FROM location where plot_id = plot_id_in;
+  DELETE FROM plot where plot_id = plot_id_in;
 
 EXCEPTION WHEN raise_exception THEN
   RAISE;
@@ -184,8 +175,7 @@ CREATE OR REPLACE FUNCTION delete_plots_from_trig()
 RETURNS TRIGGER AS $$   
 BEGIN
   PERFORM delete_plots (
-    plot_id_in := OLD.plot_id,
-    source_name_in := OLD.source_name
+    plot_id_in := OLD.plot_id
   );
   RETURN OLD;
 

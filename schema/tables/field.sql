@@ -143,22 +143,13 @@ END;
 $$ LANGUAGE plpgsql;
 
 CREATE OR REPLACE FUNCTION delete_fields (
-  field_id_in UUID,
-  source_name_in text) RETURNS void AS $$   
+  field_id_in UUID) RETURNS void AS $$   
 DECLARE
   scid UUID;
 BEGIN
 
-  IF( source_name_in IS NOT NULL ) THEN
-    SELECT get_source_id(source_name_in) into scid;
-    DELETE FROM location WHERE source_id = scid;
-    DELETE FROM field WHERE source_id = scid;
-  END IF;
-
-  IF( field_id_in IS NOT NULL ) THEN
-    DELETE FROM location WHERE field_id = field_id_in and plot_id is null;
-    DELETE FROM field where field_id = field_id_in;
-  END IF;
+  DELETE FROM location WHERE field_id = field_id_in and plot_id is null;
+  DELETE FROM field where field_id = field_id_in;
 
 EXCEPTION WHEN raise_exception THEN
   RAISE;
@@ -219,8 +210,7 @@ CREATE OR REPLACE FUNCTION delete_fields_from_trig()
 RETURNS TRIGGER AS $$   
 BEGIN
   PERFORM delete_fields (
-    field_id_in := OLD.field_id,
-    source_name_in := OLD.source_name
+    field_id_in := OLD.field_id
   );
   RETURN OLD;
 
