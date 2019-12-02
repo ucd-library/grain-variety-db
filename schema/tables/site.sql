@@ -30,7 +30,7 @@ CREATE OR REPLACE VIEW site_view AS
     sc.name as source_name
   FROM
     site s
-JOIN ca_counties cac ON ST_Intersects(cac.geom, s.boundary)
+LEFT JOIN ca_counties cac ON ST_Intersects(cac.geom, s.boundary)
 LEFT JOIN source sc ON s.source_id = sc.source_id;
 
 CREATE OR REPLACE VIEW site_view_ll as
