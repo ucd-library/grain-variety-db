@@ -54,6 +54,21 @@ CREATE OR REPLACE VIEW site_view_kml as
   WHERE
     s.site_id = sv.site_id;
 
+CREATE OR REPLACE VIEW site_weather_view as
+  SELECT
+    sv.*,
+    p.measurement as measurement,
+    p.date as date,
+    ST_Value(p.rast, ST_Centroid(s.boundary)) as value
+  FROM
+    site_view sv,
+    site s,
+    prism p
+  WHERE
+    s.site_id = sv.site_id AND
+    EXTRACT(YEAR FROM p.date) >= sv.season_start_year AND
+    EXTRACT(YEAR FROM p.date) <= sv.season_end_year;
+
 -- FUNCTIONS
 CREATE OR REPLACE FUNCTION insert_site_kml (
   site_id UUID,
