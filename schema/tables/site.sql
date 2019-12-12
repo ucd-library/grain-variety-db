@@ -59,6 +59,7 @@ CREATE OR REPLACE VIEW site_weather_view as
     sv.*,
     p.measurement as measurement,
     p.date as date,
+    p.quality as quality,
     ST_Value(p.rast, ST_Centroid(s.boundary)) as value
   FROM
     site_view sv,
@@ -68,6 +69,8 @@ CREATE OR REPLACE VIEW site_weather_view as
     s.site_id = sv.site_id AND
     EXTRACT(YEAR FROM p.date) >= sv.season_start_year AND
     EXTRACT(YEAR FROM p.date) <= sv.season_end_year;
+
+
 
 -- FUNCTIONS
 CREATE OR REPLACE FUNCTION insert_site_kml (
