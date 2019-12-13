@@ -70,8 +70,6 @@ CREATE OR REPLACE VIEW site_weather_view as
     EXTRACT(YEAR FROM p.date) >= sv.season_start_year AND
     EXTRACT(YEAR FROM p.date) <= sv.season_end_year;
 
-
-
 -- FUNCTIONS
 CREATE OR REPLACE FUNCTION insert_site_kml (
   site_id UUID,

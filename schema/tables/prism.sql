@@ -10,6 +10,8 @@ CREATE TABLE prism (
   measurement TEXT NOT NULL,
   quality prism_quality NOT NULL
 );
+CREATE INDEX prism_date_idx ON prism(date);
+CREATE INDEX prism_measurement_idx ON prism(measurement);
 
 -- GETTER FUNCTION
 CREATE FUNCTION get_prism_xy_from_ll(in lat float, in lng float, out x int, out y int)
