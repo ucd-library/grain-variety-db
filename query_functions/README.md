@@ -1,6 +1,6 @@
 # R Query Functions
 
-This folder contains functions for querying the UC Davis Grain Cropping Systems Database through R. 
+This folder contains functions for common and confusing queries to the UC Davis Grain Cropping Systems Database through R. Simple queries such as selecting and filtering data are best done through the dbplyr package.
 
 ## Usage
 
