@@ -26,7 +26,9 @@
 #' @param lat The latitude of the point of interest as a number. Must be within CA.
 #' @param long The longitue of the point of interest as a number. Must be within CA.
 #' @param from_date The start date of interest as "YYYY-MM-DD" character format
-#' @param to_date The end date of interest as "YYYY-MM-DD" character format
+#' (data not available before 2012 currently)
+#' @param to_date The end date of interest as "YYYY-MM-DD" character format 
+#' (data not available before 2012 currently)
 #' @param type Either "ppt", "tmin", or "tmax" are available
 #' 
 #' @return a data.frame object with daily values for chosen variable 
