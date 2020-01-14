@@ -9,6 +9,7 @@ services:
       - pg-data:/var/lib/postgresql/data
     ports:
       - 5433:5432
+    # command: bash -c 'tail -f /dev/null'
 
 volumes:
   pg-data:

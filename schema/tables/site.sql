@@ -70,6 +70,30 @@ CREATE OR REPLACE VIEW site_weather_view as
     EXTRACT(YEAR FROM p.date) >= sv.season_start_year AND
     EXTRACT(YEAR FROM p.date) <= sv.season_end_year;
 
+-- For performance, make sure ssurgo table has the following:
+-- create index ssurgo_geom_gist on ssurgo using GIST(geom);
+CREATE OR REPLACE VIEW site_soil_view as
+  SELECT
+    sv.*,
+    ss.mukey,
+    ss.muname,
+    ss.frmlndc,
+    ss.clyttl,
+    ss.dbvndr,
+    ss.omr,
+    ss.sndttl,
+    ss.sltttl,
+    ss.areasym,
+    ss.spatial,
+    ss.musym
+  FROM
+    site_view sv,
+    site s
+  JOIN 
+    ssurgo ss ON ST_Intersects(ST_Centroid(s.boundary), ss.geom)
+  WHERE
+    s.site_id = sv.site_id;
+
 -- FUNCTIONS
 CREATE OR REPLACE FUNCTION insert_site_kml (
   site_id UUID,
