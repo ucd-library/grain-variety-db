@@ -23,7 +23,7 @@
 #' 
 #' @import dbplyr, RPostgres, DBI
 #' 
-#'
+#' @param con A database connection
 #' @param lat The latitude of the point of interest as a number. Must be within CA.
 #' @param long The longitue of the point of interest as a number. Must be within CA.
 #' @param from_date The start date of interest as "YYYY-MM-DD" character format
@@ -36,9 +36,9 @@
 #'
 #'
 #' @examples
-#' prism_historical_season(lat = 38.533867, long = -121.771598, from_date = "2019-10-01", type = "ppt")
+#' prism_historical_season(con = con, lat = 38.533867, long = -121.771598, from_date = "2019-10-01", type = "ppt")
 
-prism_historical_season <- function(lat, long, from_date, type){
+prism_historical_season <- function(con, lat, long, from_date, type){
 	
 	from_hist <- paste(lubridate::year(as.Date(Sys.Date())) - 10, lubridate::month(as.Date(from_date)), lubridate::day(as.Date(from_date)), sep = "-")
 	to_hist <- paste(lubridate::year(as.Date(Sys.Date())) - 1, 6, 30, sep = "-")

@@ -22,7 +22,7 @@
 #' 
 #' @import dbplyr, RPostgres, DBI
 #' 
-#'
+#' @param con A database connection
 #' @param lat The latitude of the point of interest as a number. Must be within CA.
 #' @param long The longitue of the point of interest as a number. Must be within CA.
 #' @param from_date The start date of interest as "YYYY-MM-DD" character format
@@ -36,9 +36,9 @@
 #'
 #'
 #' @examples
-#' prism_date_range(lat = 38.533867, long = -121.771598, from_date = "2019-10-01", to_date = "2019-12-01", type = "ppt")
+#' prism_date_range(con = con, lat = 38.533867, long = -121.771598, from_date = "2019-10-01", to_date = "2019-12-01", type = "ppt")
 
-prism_date_range <- function(lat, long, from_date, to_date, type){
+prism_date_range <- function(con, lat, long, from_date, to_date, type){
 	
 	daily_data <- DBI::dbGetQuery(con, paste0(
 		"SELECT date, 
