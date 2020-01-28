@@ -37,5 +37,11 @@
 #' prism_point_sum(con = con, lat = 38.533867, long = -121.771598, from_date = "2019-10-01", to_date = "2019-12-01", type = "ppt")
 
 prism_point_sum <- function(con, lat, long, from_date, to_date, type){
-	return(dbGetQuery(con, paste0("SELECT SUM(ST_Value(rast, ST_SetSRID(ST_Point(", long, ", ", lat, "), 4326))) FROM prism WHERE measurement = '", type, "'AND date BETWEEN CAST('", from_date, "' AS DATE) AND CAST('", to_date, "' AS DATE);"))$sum)
+	return(dbGetQuery(con, paste0("WITH point as (
+	SELECT (ST_WorldToRasterCoord(rast,", long, ",", lat, ")).* from prism limit 1
+	) SELECT 
+																SUM(ST_Value(rast, point.columnx, point.rowy)) 
+																FROM prism, point WHERE measurement = '", type,
+																"'AND date BETWEEN CAST('", from_date, "' AS DATE) AND
+																CAST('", to_date, "' AS DATE);"))$sum)
 }
