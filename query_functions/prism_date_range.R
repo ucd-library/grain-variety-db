@@ -41,14 +41,21 @@
 prism_date_range <- function(con, lat, long, from_date, to_date, type){
 	
 	daily_data <- DBI::dbGetQuery(con, paste0(
-		"SELECT date, 
-		EXTRACT(MONTH FROM date) AS month, 
-		EXTRACT(DAY FROM date) AS day,
-		ST_Value(rast, ST_SetSRID(ST_Point(", long, ", ", lat, "), 4326)) AS amount
-		FROM prism 
-		WHERE measurement = '", type, "' 
-		AND date BETWEEN CAST('", from_date, "' AS DATE) AND CAST('", to_date, "' AS DATE);"))
+		"WITH point as (
+	SELECT (ST_WorldToRasterCoord(rast,", long, ",", lat, ")).* from prism limit 1
+)
+SELECT date,
+EXTRACT(MONTH FROM date) AS month,
+EXTRACT(DAY FROM date) AS day,
+ST_Value(rast, point.columnx, point.rowy) AS amount
+FROM
+prism, point
+WHERE measurement = '", type, "'
+AND date BETWEEN CAST('", from_date, "' AS DATE) AND CAST('", to_date, "' AS DATE);"))
 	
 	return(daily_data)
 	
 }
+
+
+
