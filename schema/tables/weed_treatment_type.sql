@@ -107,18 +107,28 @@ $$ LANGUAGE plpgsql;
 CREATE OR REPLACE FUNCTION get_weed_treatment_type_id(name_in text, unit_in text) RETURNS UUID AS $$   
 DECLARE
   wid UUID;
-BEGIN
+  BEGIN
 
-  SELECT 
-    weed_treatment_type_id INTO wid 
-  FROM 
-    weed_treatment_type w 
-  WHERE
-    name = name_in AND
-    unit = unit_in;
+  IF unit_in IS NULL THEN
+    SELECT 
+      weed_treatment_type_id INTO wid 
+    FROM 
+      weed_treatment_type w 
+    WHERE
+      name = name_in AND
+      unit IS NULL;
+  ELSE
+    SELECT 
+      weed_treatment_type_id INTO wid 
+    FROM 
+      weed_treatment_type w 
+    WHERE
+      name = name_in AND
+      unit = unit_in;
+  END IF;
 
   IF (wid IS NULL) THEN
-    RAISE EXCEPTION 'Unknown weed_treatment_type: % %', name_in, unit_in;
+    RAISE EXCEPTION 'Unknown weed_treatment_type: name="%" unit="%"', name_in, unit_in;
   END IF;
   
   RETURN wid;

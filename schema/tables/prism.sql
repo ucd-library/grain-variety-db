@@ -14,15 +14,16 @@ CREATE INDEX prism_date_idx ON prism(date);
 CREATE INDEX prism_measurement_idx ON prism(measurement);
 
 -- GETTER FUNCTION
-CREATE FUNCTION get_prism_xy_from_ll(in lat float, in lng float, out x int, out y int)
+CREATE OR REPLACE FUNCTION get_prism_xy_from_ll(in lng float, in lat float, out x int, out y int)
 AS $$ 
+
+  WITH point AS (
+    SELECT (ST_WorldToRasterCoord(rast, lng, lat)).* from prism limit 1
+  )
   SELECT 
-    x, y 
-  FROM 
-    prism_grid_ca 
-  WHERE 
-    ST_Contains(
-        pixel, 
-        ST_PointFromText('POINT(' || lng || ' ' ||  lat || ' )', 4326)
-    );
+    point.columnx as x,
+    point.rowy as y
+  FROM
+    point;
+
 $$ LANGUAGE SQL;
