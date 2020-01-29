@@ -23,11 +23,9 @@
 #' 
 #' @import dbplyr, RPostgres, DBI
 #' 
-#'
+#' @param con A database connection
 #' @param lat The latitude of the point of interest as a number. Must be within CA.
 #' @param long The longitue of the point of interest as a number. Must be within CA.
-#' @param from_date The start date of interest as "YYYY-MM-DD" character format
-#'  (data not available before 2012 currently)
 #' @param type Either "ppt", "tmin", or "tmax" are available
 #' 
 #' @return a data.frame object with average historical daily values for the 
@@ -36,34 +34,27 @@
 #'
 #'
 #' @examples
-#' prism_historical_season(lat = 38.533867, long = -121.771598, from_date = "2019-10-01", type = "ppt")
+#' prism_historical_season(con = con, lat = 38.533867, long = -121.771598, type = "ppt")
 
-prism_historical_season <- function(lat, long, from_date, type){
-	
-	from_hist <- paste(lubridate::year(as.Date(Sys.Date())) - 10, lubridate::month(as.Date(from_date)), lubridate::day(as.Date(from_date)), sep = "-")
-	to_hist <- paste(lubridate::year(as.Date(Sys.Date())) - 1, 6, 30, sep = "-")
-	
-	if(lubridate::month(as.Date(from_date)) > 9) {
-		months <- lubridate::month(seq(as.Date(from_date), as.Date(paste(lubridate::year(as.Date(from_date)) +1, 6, 30, sep = "-")), by = "month"))
-	} else {
-		months <- lubridate::month(seq(as.Date(from_date), as.Date(paste(lubridate::year(as.Date(from_date)), 6, 30, sep = "-")), by = "month"))
-	}
-	
-	months <- paste(months, collapse = ", ")
+prism_historical_season <- function(con, lat, long, type){
 	
 	historical <- DBI::dbGetQuery(con, paste0(
-		"SELECT EXTRACT(MONTH FROM date) AS month, 
+		"WITH point as (
+	SELECT (ST_WorldToRasterCoord(rast,", long, ", ", lat, ")).* from prism limit 1
+	)
+		SELECT EXTRACT(MONTH FROM date) AS month,
 		EXTRACT(DAY FROM date) AS day,
-		AVG(ST_Value(rast, ST_SetSRID(ST_Point(", long, ", ", lat, "), 4326))) AS amount
+		AVG(ST_Value(rast, point.columnx, point.rowy)) AS amount
 		FROM 
-		prism 
+		prism, point 
 		WHERE measurement = '", type, "' 
-		AND date BETWEEN CAST('", from_hist, "' AS DATE) AND CAST('", to_hist, "' AS DATE) 
-		AND EXTRACT(MONTH FROM date) IN (", months, ") 
+		AND date BETWEEN (CURRENT_DATE - INTERVAL '11 year') AND (CURRENT_DATE - INTERVAL '1 year')
+		AND EXTRACT(MONTH FROM date) IN (10, 11, 12, 1, 2, 3, 4, 5, 6) 
 		GROUP BY 
 		month, day
 		ORDER BY
 		month, day;"))
+	
 	
 	return(historical)
 	
