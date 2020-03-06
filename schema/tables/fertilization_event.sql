@@ -100,7 +100,7 @@ BEGIN
   IF date_in IS NOT NULL THEN
     select extract(YEAR FROM date_in) into year_in;
   END IF;
-  SELECT get_location_id(trial, field, plot_number) INTO lid;
+  SELECT get_location_id(trial_in, field_in, plot_number_in) INTO lid;
   SELECT get_fertilization_type_id(fertilization_name_in, fertilization_unit_in) INTO ftid;
 
   UPDATE fertilization_event SET (

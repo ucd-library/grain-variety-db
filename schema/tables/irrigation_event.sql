@@ -65,7 +65,7 @@ BEGIN
     select extract(YEAR FROM date) into year;
   END IF;
   SELECT get_source_id(source_name) INTO source_id;
-  SELECT get_fertilization_method_id(irrigation_name, irrigation_unit) INTO imid;
+  SELECT get_irrigation_method_id(irrigation_name, irrigation_unit) INTO imid;
 
   INSERT INTO irrigation_event (
     irrigation_event_id, location_id, growth_stage_min, growth_stage_max, year, date, irrigation_method_id, amount, description, source_id
@@ -99,7 +99,7 @@ BEGIN
   IF date_in IS NOT NULL THEN
     select extract(YEAR FROM date_in) into year_in;
   END IF;
-  SELECT get_fertilization_method_id(irrigation_name, irrigation_unit) INTO imid;
+  SELECT get_irrigation_method_id(irrigation_name, irrigation_unit) INTO imid;
 
   UPDATE irrigation_event SET (
     location_id, growth_stage_min, growth_stage_max, year, date, irrigation_method_id, amount, description
