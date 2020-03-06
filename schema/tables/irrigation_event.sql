@@ -66,6 +66,7 @@ BEGIN
   END IF;
   SELECT get_source_id(source_name) INTO source_id;
   SELECT get_irrigation_method_id(irrigation_name, irrigation_unit) INTO imid;
+  SELECT get_location_id(trial, field, plot_number) INTO lid;
 
   INSERT INTO irrigation_event (
     irrigation_event_id, location_id, growth_stage_min, growth_stage_max, year, date, irrigation_method_id, amount, description, source_id
@@ -100,6 +101,7 @@ BEGIN
     select extract(YEAR FROM date_in) into year_in;
   END IF;
   SELECT get_irrigation_method_id(irrigation_name, irrigation_unit) INTO imid;
+  SELECT get_location_id(trial_in, field_in, plot_number_in) INTO lid;
 
   UPDATE irrigation_event SET (
     location_id, growth_stage_min, growth_stage_max, year, date, irrigation_method_id, amount, description
