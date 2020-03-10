@@ -100,7 +100,7 @@ BEGIN
   IF date_in IS NOT NULL THEN
     select extract(YEAR FROM date_in) into year_in;
   END IF;
-  SELECT get_irrigation_method_id(irrigation_name, irrigation_unit) INTO imid;
+  SELECT get_irrigation_method_id(irrigation_name_in, irrigation_unit_in) INTO imid;
   SELECT get_location_id(trial_in, field_in, plot_number_in) INTO lid;
 
   UPDATE irrigation_event SET (
