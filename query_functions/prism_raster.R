@@ -34,7 +34,7 @@
 
 prism_raster <- function(con, from_date, to_date, type){
 	
-	info <- dbGetQuery(conn, paste("SELECT st_xmax(st_envelope(rast)) as xmx, 
+	info <- dbGetQuery(con, paste("SELECT st_xmax(st_envelope(rast)) as xmx, 
 st_xmin(st_envelope(rast)) as xmn,
 										 st_ymax(st_envelope(rast)) as ymx,
 										 st_ymin(st_envelope(rast)) as ymn,
@@ -44,7 +44,7 @@ st_xmin(st_envelope(rast)) as xmn,
 										 (select st_union(rast, 'SUM') rast from prism WHERE date
 										 BETWEEN CAST('", from_date, "' AS DATE) AND CAST('", to_date, "' AS DATE) AND measurement = 'ppt') as a;", sep = ""))
 
-vals <- dbGetQuery(conn, paste("SELECT unnest(st_dumpvalues(rast, 1)) as vals FROM (select st_union(rast, 'SUM') rast from
+vals <- dbGetQuery(con, paste("SELECT unnest(st_dumpvalues(rast, 1)) as vals FROM (select st_union(rast, 'SUM') rast from
 									 prism WHERE date
 									  BETWEEN CAST('", from_date, "' AS DATE) AND CAST('", to_date, "' AS DATE) AND measurement = 'ppt') as a;", sep = ""))$vals
 
