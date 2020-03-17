@@ -33,12 +33,12 @@
 #'
 #'
 #' @examples
-#' prism_historical_season_all(con = con, lat = 38.533867, long = -121.771598)
+#' prism_historical_season_all(con = con, lat = 38.533867, long = -121.771598, current_start_date = "2019-10-01")
 
-prism_historical_season_all <- function(con, lat, long){
+prism_historical_season_all <- function(con, lat, long, current_start_date = "2019-10-01"){
 	
 	source("C:/Users/LundyAdmin/Documents/grain-variety-db/query_functions/gdd_to_nuptake.R")
-	
+	year <- lubridate::year(current_start_date)
 	historical <- DBI::dbGetQuery(con, paste0(
 		"WITH point as (
 	SELECT (ST_WorldToRasterCoord(rast,", long, ", ", lat, ")).* from prism limit 1
@@ -49,7 +49,8 @@ prism_historical_season_all <- function(con, lat, long){
 		AVG(ST_Value(rast, point.columnx, point.rowy)) AS amount
 		FROM 
 		prism, point 
-		WHERE date BETWEEN (CURRENT_DATE - INTERVAL '11 year') AND (CURRENT_DATE - INTERVAL '1 year')
+		WHERE NOT measurement = 'tmean'
+		AND date BETWEEN (CURRENT_DATE - INTERVAL '11 year') AND (CURRENT_DATE - INTERVAL '1 year')
 		AND EXTRACT(MONTH FROM date) IN (10, 11, 12, 1, 2, 3, 4, 5, 6) 
 		GROUP BY 
 		measurement, month, day
@@ -73,12 +74,14 @@ prism_historical_season_all <- function(con, lat, long){
 					 						 			 			  	 	(tmax-tmin))/12)
 					 						 			 ))),
 					 pseudo_date = if_else(month > 9, 
-					 											as.Date(paste("2018", month, day, sep = "-")), 
-					 											as.Date(paste("2019", month, day, sep = "-")))) %>% 
+					 											as.Date(paste(year, month, day, sep = "-")), 
+					 											as.Date(paste(year + 1, month, day, sep = "-")))) %>% 
+		filter(pseudo_date >= current_start_date) %>% 
 		arrange(pseudo_date) %>% 
-		mutate(gdd_cumsum = cumsum(gdd),
-					 nuptake_perc = gdd_to_nuptake(gdd_cumsum)) %>% 
-		select(-pseudo_date)
+		mutate(precip_cumsum = cumsum(ppt),
+					 rel_precip_cumsum =  precip_cumsum /max(precip_cumsum)*100,
+					 gdd_cumsum = cumsum(gdd),
+					 nuptake_perc = gdd_to_nuptake(gdd_cumsum))
 	
 	return(historical_output)
 	
