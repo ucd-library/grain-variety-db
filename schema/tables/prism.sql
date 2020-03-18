@@ -28,8 +28,6 @@ AS $$
 
 $$ LANGUAGE SQL;
 
-select ST_Union(ggd, 'SUM') from growing_degree_days_view where date >= '2019-03-01' and date < '2019-06-01';
-
 -- GROWING DEGREE DAYS
 CREATE OR REPLACE VIEW growing_degree_days_view AS
   with tmin as (
