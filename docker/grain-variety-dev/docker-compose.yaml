@@ -7,6 +7,8 @@ services:
       - ../../schema:/sql
       - ../io:/io
       - pg-data:/var/lib/postgresql/data
+    environment: 
+      - POSTGRES_HOST_AUTH_METHOD=trust
     ports:
       - 5433:5432
     # command: bash -c 'tail -f /dev/null'

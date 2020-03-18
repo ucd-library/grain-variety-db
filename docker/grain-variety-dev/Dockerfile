@@ -5,7 +5,7 @@ RUN apt-get update \
       && apt-get install -y --no-install-recommends \
         postgis \
         postgresql-10-postgis-2.5 \
-        postgresql-10-postgis-scripts \
+        postgresql-10-postgis-2.5-scripts \
       && rm -rf /var/lib/apt/lists/*
 
 RUN mkdir -p /docker-entrypoint-initdb.d
@@ -16,4 +16,4 @@ COPY ./initdb-postgis.sql /docker-entrypoint-initdb.d/postgis.sql
 # RUN chown postgres:postgres /etc/postgresql/postgresql.conf
 # RUN chown postgres:postgres /etc/postgresql/pg_hba.conf
 
-CMD docker-entrypoint.sh -c 'config_file=/etc/postgresql/postgresql.conf'
+# CMD docker-entrypoint.sh -c 'config_file=/etc/postgresql/postgresql.conf'
