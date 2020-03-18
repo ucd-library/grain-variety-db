@@ -70,30 +70,6 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE OR REPLACE FUNCTION rast_growing_degree_days(date_in date) RETURNS RASTER
-AS $$
-DECLARE
-  result RASTER;
-  tmax RASTER;
-  tmin RASTER;
-BEGIN
-
-  SELECT rast FROM prism WHERE date_in = date AND measurement = 'tmax' INTO tmax;
-  SELECT rast FROM prism WHERE date_in = date AND measurement = 'tmin' INTO tmin;
-
-  SELECT
-    ST_MapAlgebra(
-      ARRAY[
-        ROW(tmax, 1),
-        ROW(tmin, 1)
-      ]::rastbandarg[],
-      'growing_degree_days_rastalg_callback(double precision[][][], integer[][], text[])'::regprocedure
-    ) INTO result;
-
-  RETURN result;
-END;
-$$ LANGUAGE plpgsql;
-
 CREATE OR REPLACE FUNCTION rast_growing_degree_days(tmax RASTER, tmin RASTER) RETURNS RASTER
 AS $$
 DECLARE
