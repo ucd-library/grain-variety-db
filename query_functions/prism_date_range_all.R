@@ -68,6 +68,7 @@ prism_date_range_all <- function(con, lat, long, from_date, to_date){
 					 						 			 			  	((6*(tmax-86)^2)/
 					 						 			 			  	 	(tmax-tmin))/12)
 					 						 			 ))),
+					 precip_cumsum = cumsum(ppt),
 					 gdd_cumsum = cumsum(gdd),
 					 nuptake_perc = gdd_to_nuptake(gdd_cumsum))
 	
