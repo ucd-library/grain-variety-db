@@ -1,6 +1,9 @@
 #! /bin/bash
 
-SCHEMA=grain_growth_stage;
+# Never run this unless you mean to.
+exit -1;
+
+SCHEMA=grain;
 psql -c "CREATE SCHEMA IF NOT EXISTS $SCHEMA;"
 psql -c "CREATE EXTENSION IF NOT EXISTS \"uuid-ossp\";"
 # psql -c "alter extension \"uuid-ossp\" set schema public;"
