@@ -58,12 +58,13 @@ psql -f ./tables/irrigation_event.sql
 
 
 # Add permissions
-psql -c "grant usage on schema $SCHEMA to public;"
-psql -c "grant all on all tables in schema $SCHEMA to public;"
-psql -c "grant execute on all functions in schema $SCHEMA to public;"
-psql -c "GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA $SCHEMA TO public;"
+# psql -c "grant usage on schema $SCHEMA to public;"
+# psql -c "grant all on all tables in schema $SCHEMA to public;"
+# psql -c "grant execute on all functions in schema $SCHEMA to public;"
+# psql -c "GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA $SCHEMA TO public;"
 
-grant usage on schema grain to public;
-grant all on all tables in schema grain to public;
-grant execute on all functions in schema grain to public;
-GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA grain TO public;
+# grant usage on schema grain to public;
+# grant all on all tables in schema grain to public;
+# grant execute on all functions in schema grain to public;
+# GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA grain TO public;
+# grant all on growing_degree_days_view  to public;
