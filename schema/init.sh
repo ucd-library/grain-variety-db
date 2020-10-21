@@ -31,7 +31,7 @@ psql -f ./tables/crop.sql
 psql -f ./tables/variety.sql
 psql -f ./tables/regional_variety.sql
 psql -f ./tables/variety_label.sql
-psql -f ./tables/variety_parentage.sql
+# psql -f ./tables/variety_parentage.sql
 
 psql -f ./tables/field.sql
 psql -f ./tables/plot.sql

@@ -1,3 +1,5 @@
+-- NOT USED 10/21/2020 JM
+
 -- TABLE
 DROP TABLE IF EXISTS variety_parentage CASCADE;
 CREATE TABLE variety_parentage (

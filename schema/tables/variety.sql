@@ -7,7 +7,8 @@ CREATE TABLE variety (
   name TEXT UNIQUE NOT NULL,
   crop_classification crop_classification,
   source text,
-  release_status release_status
+  release_status release_status,
+  parent_variety_name text
 );
 
 -- VIEW
@@ -19,6 +20,7 @@ CREATE OR REPLACE VIEW variety_view AS
     v.crop_classification as crop_classification,
     v.source as source,
     v.release_status as release_status,
+    v.parent_variety_name as parent_variety_name,
     sc.name as source_name
   FROM
     variety v
@@ -33,7 +35,8 @@ CREATE OR REPLACE FUNCTION insert_variety (
   crop_classification crop_classification,
   source text,
   release_status release_status,
-  source_name text) RETURNS void AS $$   
+  source_name text
+  parent_variety_name text) RETURNS void AS $$   
 DECLARE
   source_id UUID;
   crop_id UUID;
@@ -46,9 +49,9 @@ BEGIN
   select get_crop_id(crop) into crop_id;
 
   INSERT INTO variety (
-    variety_id, source_id, crop_id, name, crop_classification, source, release_status
+    variety_id, source_id, crop_id, name, crop_classification, source, release_status, parent_variety_name
   ) VALUES (
-    variety_id, source_id, crop_id, name, crop_classification, source, release_status
+    variety_id, source_id, crop_id, name, crop_classification, source, release_status, parent_variety_name
   );
 
 EXCEPTION WHEN raise_exception THEN
@@ -62,7 +65,8 @@ CREATE OR REPLACE FUNCTION update_variety (
   name_in text,
   crop_classification_in crop_classification,
   source_in text,
-  release_status_in release_status) RETURNS void AS $$   
+  release_status_in release_status,
+  parent_variety_name_in text) RETURNS void AS $$   
 DECLARE
   cid UUID;
 BEGIN
@@ -70,9 +74,9 @@ BEGIN
   select get_crop_id(crop_in) into cid;
 
   UPDATE variety SET (
-    crop_id, name, crop_classification, source, release_status
+    crop_id, name, crop_classification, source, release_status, parent_variety_name
   ) = (
-    cid, name_in, crop_classification_in, source_in, release_status_in
+    cid, name_in, crop_classification_in, source_in, release_status_in, parent_variety_name_in
   ) WHERE
     variety_id = variety_id_in;
 
@@ -93,6 +97,7 @@ BEGIN
     source := NEW.source,
     release_status := NEW.release_status,
     source_name := NEW.source_name
+    parent_variety_name := NEW.parent_variety_name
   );
   RETURN NEW;
 
@@ -110,7 +115,8 @@ BEGIN
     name_in := NEW.variety_name,
     crop_classification_in := NEW.crop_classification,
     source_in := NEW.source,
-    release_status_in := NEW.release_status
+    release_status_in := NEW.release_status,
+    parent_variety_name_in := NEW.parent_variety_name
   );
   RETURN NEW;
 
