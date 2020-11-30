@@ -35,7 +35,7 @@ CREATE OR REPLACE FUNCTION insert_variety (
   crop_classification crop_classification,
   source text,
   release_status release_status,
-  source_name text
+  source_name text,
   parent_variety_name text) RETURNS void AS $$   
 DECLARE
   source_id UUID;
@@ -96,7 +96,7 @@ BEGIN
     crop_classification := NEW.crop_classification,
     source := NEW.source,
     release_status := NEW.release_status,
-    source_name := NEW.source_name
+    source_name := NEW.source_name,
     parent_variety_name := NEW.parent_variety_name
   );
   RETURN NEW;
