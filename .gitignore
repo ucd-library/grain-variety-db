@@ -2,3 +2,5 @@ data
 .Rproj.user
 .DS_Store
 *.conf
+*.zip
+schema/tables/ssurgo/ssurgo_soils
