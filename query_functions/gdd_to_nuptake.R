@@ -1,8 +1,3 @@
-#Converts cumulative GDD calculated from PRISM max/min temperatures to N uptake based on coefficients from quadratic linear model with smoothing
-# dervied in lme.1 of the file "C:/Users/melundy/Box/Grain Cropping Systems Lab/Agronomic Studies/N_uptake/N_uptake_2016_2018_v3.R"
-# where lme.1$coefficients$fixed[3] = 0.00009361; lme.1$coefficients$fixed[2] = 0.2460964; and lme.1$coefficients$fixed[1] = -72.67577
-
-
 gdd_to_nuptake <- function(GDD) {
   
   lme.1_coefficients_fixed_3 = -0.00009361
