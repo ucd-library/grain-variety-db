@@ -10,7 +10,8 @@ CREATE TABLE crop_sample (
   growth_stage_min INTEGER,
   growth_stage_max INTEGER,
   amount float NOT NULL,
-  description text
+  description text,
+  UNIQUE(crop_part_measurement_id, location_id, date, year)
 );
 CREATE INDEX crop_sample_source_id_idx ON crop_sample(source_id);
 CREATE INDEX location_id_idx ON crop_sample(location_id);

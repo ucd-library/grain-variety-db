@@ -9,7 +9,6 @@ CREATE TABLE regional_variety (
   trial_group trial_group,
   crop_sub_type crop_sub_type,
   year_added INTEGER,
-  crop_classification crop_classification,
   UNIQUE(region, uc_entry_number)
 );
 
@@ -21,7 +20,6 @@ CREATE OR REPLACE VIEW regional_variety_view AS
     v.name as variety_name,
     r.uc_entry_number as uc_entry_number,
     r.trial_group as trial_group,
-    r.crop_classification as crop_classification,
     r.crop_sub_type as crop_sub_type,
     r.year_added as year_added,
     sc.name AS source_name
@@ -37,7 +35,6 @@ CREATE OR REPLACE FUNCTION insert_regional_variety (
   variety_name TEXT,
   uc_entry_number INTEGER,
   trial_group trial_group,
-  crop_classification crop_classification,
   crop_sub_type crop_sub_type,
   year_added INTEGER,
   source_name TEXT) RETURNS void AS $$   
@@ -54,9 +51,9 @@ BEGIN
   SELECT get_variety_id(variety_name) INTO vid;
 
   INSERT INTO regional_variety (
-    regional_variety_id, region, variety_id, uc_entry_number, trial_group, crop_classification, crop_sub_type, year_added, source_id
+    regional_variety_id, region, variety_id, uc_entry_number, trial_group, crop_sub_type, year_added, source_id
   ) VALUES (
-    regional_variety_id, region, vid, uc_entry_number, trial_group, crop_classification, crop_sub_type, year_added, source_id
+    regional_variety_id, region, vid, uc_entry_number, trial_group, crop_sub_type, year_added, source_id
   );
 
 EXCEPTION WHEN raise_exception THEN
@@ -70,7 +67,6 @@ CREATE OR REPLACE FUNCTION update_regional_variety (
   variety_name_in TEXT,
   uc_entry_number_in INTEGER,
   trial_group_in trial_group,
-  crop_classification_in crop_classification,
   crop_sub_type_in crop_sub_type,
   year_added_in INTEGER) RETURNS void AS $$   
 DECLARE
@@ -79,9 +75,9 @@ BEGIN
   SELECT get_variety_id(variety_name_in) INTO vid;
 
   UPDATE regional_variety SET (
-    region, variety_id, uc_entry_number, trial_group, crop_classification, crop_sub_type,  year_added
+    region, variety_id, uc_entry_number, trial_group, crop_sub_type,  year_added
   ) = (
-    region_in, vid, uc_entry_number_in, trial_group_in, crop_classification_in, crop_sub_type_in, year_added_in
+    region_in, vid, uc_entry_number_in, trial_group_in, crop_sub_type_in, year_added_in
   ) WHERE
     regional_variety_id = regional_variety_id_in;
 
@@ -100,7 +96,6 @@ BEGIN
     variety_name := NEW.variety_name,
     uc_entry_number := NEW.uc_entry_number,
     trial_group := NEW.trial_group,
-    crop_classification := NEW.crop_classification,
     crop_sub_type := NEW.crop_sub_type,
     year_added := NEW.year_added,
     source_name := NEW.source_name
@@ -121,7 +116,6 @@ BEGIN
     variety_name_in := NEW.variety_name,
     uc_entry_number_in := NEW.uc_entry_number,
     trial_group_in := NEW.trial_group,
-    crop_classification_in := NEW.crop_classification,
     crop_sub_type_in := NEW.crop_sub_type,
     year_added_in := NEW.year_added
   );
