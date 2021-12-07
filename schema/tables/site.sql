@@ -80,6 +80,8 @@ CREATE OR REPLACE VIEW site_soil_view as
     ss.aws025w,
     ss.aws050w,
     ss.aws0100,
+    ss.wfftnb,
+    ss.wthrdb,
     ss.frmlndc,
     ss.clyttl,
     ss.dbvndr,
