@@ -4,7 +4,7 @@ CREATE TABLE variety_permanent_characteristic (
   variety_permanent_characteristic_id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   source_id UUID REFERENCES source NOT NULL,
   variety_id UUID REFERENCES variety NOT NULL,
-  permanent_characteristic_id REFERENCES permanent_characteristic NOT NULL,
+  permanent_characteristic_id UUID REFERENCES permanent_characteristic NOT NULL,
   value INTEGER
 );
 CREATE INDEX variety_permanent_characteristic_source_id_idx ON variety_permanent_characteristic(source_id);
@@ -55,24 +55,23 @@ EXCEPTION WHEN raise_exception THEN
 END; 
 $$ LANGUAGE plpgsql;
 
--- TODO
 CREATE OR REPLACE FUNCTION update_variety_permanent_characteristic (
   variety_permanent_characteristic_id_in UUID,
   variety_name_in TEXT,
   permanent_characteristic_name_in TEXT,
   value_in INTEGER) RETURNS void AS $$   
 DECLARE
-  UUID vid;
-  UUID pcid;
+  vid UUID;
+  pcid UUID;
 BEGIN
 
   SELECT get_variety_id(variety_name_in) INTO vid;
   SELECT get_permanent_characteristic_id(permanent_characteristic_name_in) INTO pcid;
 
   UPDATE variety_permanent_characteristic SET (
-    variety_name, permanent_characteristic_name, value, 
+    variety_id, permanent_characteristic_id, value
   ) = (
-    variety_name_in, permanent_characteristic_name_in, value_in
+    vid, pcid, value_in
   ) WHERE
     variety_permanent_characteristic_id = variety_permanent_characteristic_id_in;
 

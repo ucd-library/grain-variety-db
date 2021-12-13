@@ -54,7 +54,7 @@ DECLARE
 BEGIN
 
   UPDATE permanent_characteristic SET (
-    name, description, 
+    name, description
   ) = (
     name_in, description_in
   ) WHERE
@@ -98,7 +98,7 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- FUNCTION GETTER
-CREATE OR REPLACE FUNCTION get_permanent_characteristic_id(name_in) RETURNS UUID AS $$   
+CREATE OR REPLACE FUNCTION get_permanent_characteristic_id(name_in TEXT) RETURNS UUID AS $$   
 DECLARE
   pid UUID;
 BEGIN

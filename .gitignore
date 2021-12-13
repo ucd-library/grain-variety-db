@@ -4,3 +4,4 @@ data
 *.conf
 *.zip
 schema/tables/ssurgo/ssurgo_soils
+io
