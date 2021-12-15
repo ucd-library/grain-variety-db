@@ -12,6 +12,8 @@ shp2pgsql -s 4326 ./ssurgo_soils/ssurgo_ca_soils.shp grain.ssurgo_test | psql
 psql -c 'drop view grain.site_soil_view;'
 psql -c 'drop table grain.ssurgo;'
 psql -c 'ALTER TABLE grain.ssurgo_test RENAME TO "grain"."ssurgo";'
+# make sure to recreate ssurgo geom index
+# create index ssurgo_geom_gist on ssurgo using GIST(geom);
 
 # now create the site_soil_view; see site.sql
 
